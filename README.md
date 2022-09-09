@@ -1,10 +1,2 @@
 # STUDY
-
-## LINUX
-- 초기설정
-- 명령어
-  - `netstat`
-  - `find`
-  - `ps`
-
-test
+*개인 공부 기록장*
