@@ -32,7 +32,7 @@ command : `docker-compose up -d`
 <hr>
 
 ### `down`
-*docker compose에 정의되어 있는 모든 서비스 컨테이너를 한번에 정지시키고 삭제힘(`docker-compose up`이랑 정반대의 동작을 함.)* 
+*docker compose에 정의되어 있는 모든 서비스 컨테이너를 한번에 정지시키고 삭제함(`docker-compose up`이랑 정반대의 동작을 함.)* 
 
 command : `docker-compose down`
 
