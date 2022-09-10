@@ -1,6 +1,6 @@
 ---
 name: STUDY
-about: 개인 
+about: 개인 공부
 title: "[ADD], [UPDATE], [FIX]"
 labels: documentation
 assignees: KEEMSY
