@@ -32,6 +32,9 @@ secure-file-priv= NULL
 !includedir /etc/mysql/conf.d/
 ```
 
+<br> <hr>
+
+
 ### 특징
 - `my.cnf`은 여러 파일 존재한다. 하지만 가장 먼저 실행되는 파일이 설정으로 적용된다.
     > 실행되는 순서를 확인 하는 방법 
@@ -42,6 +45,8 @@ secure-file-priv= NULL
     /etc/my.cnf /etc/mysql/my.cnf ~/.my.cnf
 
     ```
+
+<br> <hr>
 
 ### CUSTOM 설정
 *[참고 사이트](https://gist.github.com/fevangelou/fb72f36bbe333e059b66)*
