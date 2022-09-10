@@ -1,6 +1,6 @@
 ---
 name: STUDY
-about: 해당 내용
+about: 
 title: "[ADD], [UPDATE], [FIX]"
 labels: documentation
 assignees: KEEMSY
