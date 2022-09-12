@@ -5,6 +5,10 @@ command : `docker pull mysql:{version}`
 
 ## 기본 설정
 *mysql.cnf 파일 설정을 통하여 기본 설정 값이 설정 됨*
+### 환경 변수 확인(mysql cosole 접속)
+- `SHOW VARIABLES` or `SHOW GLOBAL VARIABLES`
+
+
 <br> <hr>
 
 ## Master - Slave 설정
@@ -48,3 +52,25 @@ command : `docker pull mysql:{version}`
         - `Slave_IO_Running: Yes, Slave_SQL_Running: Yes`가 나온다면 연결 성공
         - master 서버의 mysql에서 `show processlist\G;`를 통해 slave의 접속 정보를 확인 할 수 있다. 
             - `master has sent all binlog to slave; waiting for more updates`의 메세지가 보인다면 정상적으로 마스터로 접속하고 있음을 확인 할 수 있다.
+
+
+## 사용자 추가, 삭제 / 권한 부여
+- MySQL은 사용자 이름, 비밀번호, 접속 호스트로 사용자를 인증한다.
+- MySQL은 로그인을 시도하는 위치가 어디인가 하는 것도 인증의 일부로 간주한다.
+- MySQL에서 사용자 계정을 추가하고 권한을 추가하거나 제거하는데 GRANT 와 REVOKE 명령어 사용을 권장한다.
+> 기본적으로 확인해야하는 사항들
+
+- `use {DATABASE}` : 사용할 데이터 베이스 선택 <br>
+- `selct user, host, password from user` : user 테이블 확인 <br>
+-  `flush privileges;` : 변경된 내용을 메모리에 반영(권한 적용) <br>
+
+### 사용자 추가
+`create user '{USER}'@'{HOST}' identified by '{PASSWORD}`; 
+### 사용자 삭제
+`drop user {USER}@'{HOST}';`
+
+### 권한 부여
+- `create user '{USER}'@'{HOST}' identified by '{PASSWORD};'`
+- `grant all privileges on {DB}.{TABLE} to '{USER}'@'{HOST}' with grant option;'`
+
+
