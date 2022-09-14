@@ -85,6 +85,18 @@
 
 ## 컨테이너 내의 실행중인 프로세스 확인
 `docker container top [CONTAINER NAME or CONTAINER ID]`
+<br> <br>
+
+## 컨테이너 로그 확인
+`docker logs {CONTAINER NAME}`
+
+<br> <br>
+
+## 파일 복사(로컬 -> 컨테이너)
+`docker cp {HOST FILE PATH} {CONTAINER NAME}:{CONTAINER FILE PATH}`
+
+## 파일 복사(컨테이너 -> 로컬)
+`docker cp {CONTAINER NAME}:{CONTAINER FILE PATH} {[HOST FILE PATH}`
 
 <hr>
 

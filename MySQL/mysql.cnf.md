@@ -39,7 +39,7 @@ secure-file-priv= NULL
 - `my.cnf`은 여러 파일 존재한다. 하지만 가장 먼저 실행되는 파일이 설정으로 적용된다.
     > 실행되는 순서를 확인 하는 방법 
     - `mysql --help` 입력하여  아래 부분을 확인하여 우선순위 확인 가능
-    ``` shell
+    ``` shell{{}}
     Default options are read from the following files in the given order:
 
     /etc/my.cnf /etc/mysql/my.cnf ~/.my.cnf
