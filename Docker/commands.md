@@ -153,5 +153,8 @@
 ## 방법 2-2
 `docker run -it --name [container1] -v /root/data:/data [IMAGE] /bin/bash` <br>
 `docker run -it --name [container2] -v /root/data:/data [IMAGE] /bin/bash`
-- 각 각의 container에서 호스트의 디렉토리(파일)을 공유한다.
+- container1의 /data 디렉토리와 container2의 data 디렉토리를 호스트의 /root/data 디렉토리와 매핑 함으로써 각 각의 container에서 호스트의 디렉토리(파일)을 공유한다.
 
+## 방법 3
+`docker run -it -v [HOST FILE]:[CONTAINER FILE] [IMAGE] /bin/bash`
+- 디렉토리 뿐만 아니라 호스트의 파일 하나도 container와 매핑이 가능하다.
