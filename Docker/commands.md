@@ -138,12 +138,20 @@
 - 이를 통해 컨테이너 생성 시, /var/lib/docker/volumes에 hash값을 가지는 디렉토리가 생성되고, _data 디렉토리 안에 컨테이너의 /data 디렉토리가 매핑 된다.
   - 컨테이너에서 /data 디렉토리에 파일을 생성/삭제/변경 등의 작업을 하게되면, 호스트의 /var/lib/docker/volumes/xxxx 디렉토리에 같은 내용이 존재하게 된다.
 
-## 방법 2
+## 방법 2-1
 `docker run -it -v [HOST DIRECTIORY]:[CONTAINER VOLUME DIRECTORY] [IMAGE] /bin/bash`
 - volume의 위치를 사용자가 정하여 사용한다.(데이터를 찾기 쉽다.)
 > 호스트의 특정 디렉토리(or 파일)을 container와 매핑한다.
+
+![방법2](img/volume2.png)
 
 예시코드 : `docker run -it -v /root/data:/data centos /bin/bash` 
 
 - 위의 명령어는 호스트의 /root/data 디렉토리를 conatainer의 volume 디렉토리로 사용할 수 있도록 한다.
   - 호스트에서 /root/data 디렉토리에 파일으 생성하게 된다면, container에서도 파일이 존재하고 사용할 수 있다.(반대의 경우(container에서 파일을 생성)에도 호스트에서 파일이 존재하게 된다.) 
+
+## 방법 2-2
+`docker run -it --name [container1] -v /root/data:/data [IMAGE] /bin/bash` <br>
+`docker run -it --name [container2] -v /root/data:/data [IMAGE] /bin/bash`
+- 각 각의 container에서 호스트의 디렉토리(파일)을 공유한다.
+
