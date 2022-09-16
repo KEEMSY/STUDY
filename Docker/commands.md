@@ -90,6 +90,17 @@
 ## 컨테이너 로그 확인
 `docker logs {CONTAINER NAME}`
 
+> logging level 설정 
+
+*컨테이너를 실행할 때, 환경변수로 전달하여 지정한다.*
+- `-e RIT_LOG_LEVEL=ERROR`
+
+- `-e RIT_LOG_LEVEL=WARN`
+
+- `-e RIT_LOG_LEVEL=INFO`
+
+- `-e RIT_LOG_LEVEL=DEBUG`
+
 <br> <br>
 
 ## 파일 복사(로컬 -> 컨테이너)
