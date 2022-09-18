@@ -1,9 +1,9 @@
 ## **컨테이너 생성**
-`docker run -d -p [host]:[container] --name [CONTAINER NAME] -v [host path]:[container path] -e RIT_LOG_LEVEL=INFO [IMAGE]`
+`docker run -d -p [HOST PORT]:[CONTAINER PORT] --name [CONTAINER NAME] -v [HOST PATH]:[CONTAINER PATH] -e RIT_LOG_LEVEL=INFO [IMAGE]`
 
 - `--name` : 컨테이너 이름 지정
-- `-p[호스트포트]:[컨테이너 포트]` : 호스트와 컨테이너의 포트를 매핑한다.
-- `-v [호스트 디렉토리]:[컨테이너디렉토리]` : 볼륨을 지정한다.
+- `-p [HOST PORT]:[CONTAINER PORT]` : 호스트와 컨테이너의 포트를 매핑한다.
+- `-v [HOST DIRECTORY]:[CONTAINER DIRECTORY]` : 볼륨을 지정한다.
 - `-env ` or `-e` : 환경변수를 설정한다.
 - `-d` : 백그라운드 실행
 
