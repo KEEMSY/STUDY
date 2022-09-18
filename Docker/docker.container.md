@@ -65,6 +65,11 @@
 
 <br><hr><br>
 
+## **컨테이너 세부정보 출력**
+`docke container inspect [CONTAINER NAME]`
+
+<br><hr><br>
+
 ## **컨테이너 포트 확인**
 `docker container port`
 
