@@ -1,5 +1,33 @@
 ## Dockerfile 문법
 ```docker
+FROM ubuntu:20.04
+
+ENV NAME=KEEMSY \
+    FROM=KOREA
+
+
+MAINTAINER "ahr03003@gmail.com"
+
+
+RUN apt-get update && \
+    apt-get upgrade
+
+RUN apt-get install openssh-server \
+    net-tools
+
+
+COPY . /home
+
+
+WORKDIR /home 
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+COPY run.sh /run.sh
+RUN chmod +x /run.sh
+
 
 ```
 
@@ -12,6 +40,9 @@
 - `ADD` - 컨테이너 빌드시 호스트 파일을 컨테이너로 복사 (tar, url(ftp://..)도 가능)
 - `WORKDIR` - 컨테이너 빌드시 명령이 실행될 기본 디렉터리 설정
 - `ENV` - 환경변수 지정
+    - 여러개의 환경변수를 지정할 경우 `\`를 사용하자(layer가 하나로 여러개의 변수를 지정할 수 있음)
+    KEY2=VALUE2 \
+    KEY2=VALUE2
 - `USER` - 명령 및 컨테이너 실행시 적용할 유저 설정
 - `VOLUME` - 파일 또는 디렉터리를 컨테이너의 디렉터리로 마운트
 - `EXPOSE` - 컨테이너 동작 시 외부에서 사용할 포트 지정
