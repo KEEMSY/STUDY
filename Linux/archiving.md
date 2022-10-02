@@ -161,3 +161,14 @@
 
     - `/dev/sda1` 파티션의 파일을 무작위 글자들로 덮어쓰기
         - `dd if=/dev/urandom of /dev/sda`
+
+
+<br>
+
+>**`rsync`를 통한 아카이브 동기화**
+
+*`rsync`는 를 사용하기 위해서는 원격호스트 및 로컬 호스트 모두`rsync` 패키지의 설치가 필요하다.*
+- `rsync [OPTION] [FILE] [USER@IP:DIRECTORY]`
+    - `rsync -av * username@IP:syncdirectory`
+        - `-v`: 명령이 수행하는 작업을 상세히 출력한다.
+        - `-a`: 재귀적으로 동기화하고 특스파일, 수정시각, 소유권, 접근권한을 유지시켜준다.
