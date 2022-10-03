@@ -70,3 +70,18 @@
 
 <br><hr><br>
 
+## 시스템 성능 확인
+- `uptime`:1, 5, 15분 동안 평균 CPU 부하를 보여준다.
+- `cat /proc/cpuinfo | grep processor`: CPU 개수를 반환한다.
+- `top`: 실행 중인 프로세스들의 상태를 실시간으로 보여준다.
+- `killall yes`: `yes` 명령으로 실행된 프로세스를 모두 종료한다.
+- `nice --15 /var/scripts/mybackup.sh`: `mybackup.sh` 가 시스템 리소스를 사용하는 우선순위를 높인다.
+- `free -h`: 전체 램과 가용한 램의 크기를 보여준다.
+- `df -i`: 각 파일 시스템의 전체 `inode` 와 가용가능한 `inode` 를 보여준다.
+- `find . -xdev -type f | cut -d "/" -f 2 | sort | uniq -c | sort -n`: 현재 디렉터리에서 하위 디렉터리별로 저장된 파일의 개수를 보여준다.
+- `apt autoremove`: 사용되지 않는 예전 커널 헤더들을 삭제한다.
+- `nethogs eth0 eth0`: 인터페이스를 통해 네트워크에 연결된 프로세스와 전송 데이터를 보여준다.
+- `tc qdisc add dev eth0 root netem delay 100ms`: `eth0` 인터페이스를 통해 전송되는 트래픽을 100ms 지연한다.
+- `nmon -f -s 30 -c 120`: `nmon` 이 30초 단위로 1시간 동안 조사한 일련의 데이터를 파일에 저장한다.
+
+<br><hr><br>
