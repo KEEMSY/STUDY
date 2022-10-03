@@ -48,3 +48,15 @@
 - `systemctl start stie-backup.timer`: systemd 타이머를 활성화 하는 명령이다.
 
 <br><hr><br>
+
+
+## 네트워크 연결
+- `hostname OpenVPN-Server`: 어느 서버에 로그인하는지 명령 프롬프트로 쉽게 확인 할 수 있다.
+- `cp -r /usr/share/easy-rsa/ /etc/openvpn`: `easy-rsa` 스크립트와 환경 설정 파일을 `OpenVPN` 환경 설정 디렉터리로 복사한다.
+- `./build-key-server server`: `server`: 라는 이름의 RSA 키 쌍을 생성한다.
+- `./pkitool client`: 공개 키 기반 구조에서 사용할 클라이언트 키 집합을 생성한다.
+- `openvpn --tls-client --config /etc/openvpn/client.conf`: `client.conf` 파일에 설정된 내용을 이용해 `OpenVPN` 리눅스 클라이언트를 실행한다.
+- `iptables -A FORWARD -i eth1 -o eh2 -m state --state NEW, ESTABLISHED, RELATED -j ACCEPT`: eth1과 eth2 네트워크 인터페이스 간의 데이터 전송을 허용한다.
+- `man shorewall-rules`: `Shorewall` 이 사용하는 `rules` 파일을 보여준다.
+
+<br><hr><br>
