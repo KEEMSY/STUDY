@@ -26,3 +26,11 @@
 
 <br><hr><br>
 
+## 아카이브 관리
+- `df -h`: 현재 활성화된 파티션을 사람이 읽기 쉬운 형식으로 보여준다.
+- `tar czvf archivename.tar.gz /home/myuser/Videos/*.mp4`: 특정 디렉터리에 있는 비디오 파일들의 압축된 아카이브를 생성한다.
+- `split -b 1G archivename.tar.gz archivename.tar.gz.part`: 큰 파일을 지정한 크기의 작은 파일 여러개로 분할한다.
+- `find /var/www/ -iname "*.mp4" -exec tar -rvf videos.tar {} \`: 지정한 기준에 맞는 파일들을  찾아 tar 명령에 전달해 아카이브에 추가한다.
+- `chmod o-r /bin/zcat`: 나머지 사용자의 읽기 권한을 제거한다.
+- `dd if=/dev/sda2 of=/home/username/partition2.img`: `sda2` 파티션의 이미지를 생성해 홈 디렉터리에 저장한다.
+- `dd if=/dev/urandom of=/dev/sda1`: 파티션을 무작위 글자로 덮어써 이전 데이터를 알아볼 수 없게한다.
