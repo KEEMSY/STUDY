@@ -60,3 +60,13 @@
 - `man shorewall-rules`: `Shorewall` 이 사용하는 `rules` 파일을 보여준다.
 
 <br><hr><br>
+
+## 시스템모니터링
+- `journalctl -n 20`: 저널에서 최근 로그 항목 20개를 출력한다.
+- `journalctl --since 15:50:00 --until 15:52:00`: `since` 에서 `util` 까지의 이벤트만 출력한다.
+- `systemd-tmpfiles --create --prefix /var/log/journal`: 시스템을 부팅할 때 마다 저널이 지워지지 않도록 영구 저장소에 보관하게 한다.
+- `cat /var/log/auth.log | grep -B 1 -A 1 failure`: 로그에서 `failure` 가 기록된 로그 항목과 그 앞뒤 항목을 하나씩 출력하게 한다.
+- `cat /var/log/mysql/error.log | awk '$3 ~/[Warning]/'`: `MySQL` 오류 로그에서 `Warning` 으로 분류된 항목의 개수를 보여준다.
+
+<br><hr><br>
+
