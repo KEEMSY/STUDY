@@ -75,7 +75,7 @@ done
 
 <br>
 
->**crontab**
+>**[**부족**]crontab**
 - `crontab -l`: 스캐줄링 된 내용 확인 
     - `no crontab for <USER>`: 아무것도 스케줄링이 되어있지 않음
 
@@ -86,3 +86,29 @@ done
 
 <br>
 
+>**[**부족**]anacron**
+
+*지정된 시간에 컴퓨터가 켜져 있음을 보장할 수 없을 경우 `anacrontab`에 스케줄을 추가한다.*
+- `anacrontab` 은 절대적인 시각이 아니라 시스템이 부팅된 후 부터 상대적인 시각을 기준으로 작동한다. 
+```shell
+# /etc/anacrontab: configuration file for anacron
+
+# See anacron(8) and anacrontab(5) for details.
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin/:/sbin//bin:/usr/sbin/:/usr/bin 
+HOME=/root
+LOGNAME=root
+
+# These replace cron's entries
+1   5   cron.daily      run-parts -- report /etc/cron.daily
+7   10  cron.weekly     run-parts --report /etc/cron.weekly
+@monthly        15  cron.manthly    run-parts --report /etc/cron.monthly
+```
+- `PATH=/usr/local/sbin:/usr/local/bin/:/sbin//bin:/usr/sbin/:/usr/bin `
+    - `PATH` 디렉터리 변수로 이 디렉터리의 파일들은 전체 경로를 지정하지 않고도 참조 할 수 있다.
+
+<br>
+
+- `1   5   cron.daily      run-parts -- report /etc/cron.daily`
+    - 하루에 한번 `/etc/cron.daily` 디렉터리의 모든 스크립트를 실행한다. 
