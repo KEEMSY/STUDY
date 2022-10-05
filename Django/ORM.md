@@ -167,3 +167,35 @@ WHERE "orm_practice_app_product"."product_owned_company_id" IN (1)
 
 <br><hr><br>
 
+## **FilterdRelation(): JOIN ON 절에 조건 걸기**
+*INNER JOIN의 경우 큰 차이가 없지만 OUTER JOIN의 경우 JOIN ON 절에 조건을 걸어주는 것과 WHERE 절에 조건을 걸어주는 것에는 성능 차이를 보일 수 있다.*
+
+- ON 절은 JOIN 하면서 조건절을 체크하지만, WHERE 절은 JOIN 결과를 완성 시킨 후에 조절을 체크한다.
+- ON 절에 조건을 주고 싶다면, FIlterdRelation 을 사용한다.
+
+>Django
+```python
+# Join Table의 on 구문에 조건 걸기  여기서 .select_related('this_is_join_table_name')
+    (Product.objects
+     #.select_related('this_is_join_table_name') 안 붙어도 되지만 쿼리셋 가독성 측면에서 붙는게 더 좋다
+     .annotate(this_is_join_table_name=FilteredRelation('product_owned_company',
+                                                           condition=Q(product_owned_company__name='company_name34'),
+                                                       ),
+              )
+     .filter(this_is_join_table_name__isnull=False)
+    )
+```
+
+<br>
+
+>MySQL
+```sql
+SELECT "orm_practice_app_product"."id", "orm_practice_app_product"."name", "orm_practice_app_product"."price", "orm_practice_app_product"."product_owned_company_id" 
+FROM "orm_practice_app_product" 
+INNER JOIN "orm_practice_app_company" this_is_join_table_name
+    ON ("orm_practice_app_product"."product_owned_company_id" =  this_is_join_table_name."id" 
+          AND ( this_is_join_table_name."name" = 'company_name34') # 이 조건을 걸기위해 FilterRelation()을 사용한다
+        ) 
+WHERE  this_is_join_table_name."id" IS NOT NULL ;
+```
+- `prefetch_related()` 은 `Prefetch()` 로 `select_related()` 은 `FilterRelation()` 로 조건절을 좀 더 섬세하게 다룰 수 있다.
