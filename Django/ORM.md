@@ -40,8 +40,8 @@ select * from '역방향_참조_필드' where id in ('첫번째 쿼리 결과의
 
 
 <br><hr><br>
-
-## 명시하지 않아도 발생하는 Query
+ 
+## **명시하지 않아도 발생하는 Query**
 > Django
 ```python
 (OrderedProduct.objects
@@ -133,3 +133,37 @@ SELECT *
      FROM "orm_practice_app_order" 
      WHERE "orm_practice_app_order"."id" IN (~~~~~~~);
 ```
+
+
+<br><hr><br>
+
+## **Prefetch(): +1 Query에 조건 걸기**
+>MySQL
+- 위에서의 **prefetch_related()를 사용했으나, QuerySet이 JOIN으로 데이터를 조회하는 경우** 에서 의도한 쿼리는 아래와 같다.
+```sql
+SELECT `orm_practice_app_company`.`id`,
+        `orm_practice_app_company`.`name`,
+        `orm_practice_app_company`.`tel_num`,
+        `orm_practice_app_company`.`address`
+  FROM `orm_practice_app_company`
+  WHERE `orm_practice_app_company`.`name` = 'company_name1';
+      
+
+SELECT "orm_practice_app_product"."id", "orm_practice_app_product"."name", "orm_practice_app_product"."price", "orm_practice_app_product"."product_owned_company_id"
+    FROM "orm_practice_app_product"
+WHERE "orm_practice_app_product"."product_owned_company_id" IN (1) 
+     -- 이런식으로 조건절이 붙기를 기대함 >>> -- AND name = 'product_name3'; 
+```
+
+- `prefectch_related()`로 추가되는 쿼리에 조건을 걸기 위해서는 `Prefetch()` 문법을 사용하여 `QuerySet` 을 작성해야한다.
+>Django
+```python
+ Company.objects
+         .prefetch_related(
+                   Prefetch('product_set', queryset=Product.objects.filter(product__name='product_name3')))
+         .filter(name='company_name1')
+ 
+```
+
+<br><hr><br>
+
