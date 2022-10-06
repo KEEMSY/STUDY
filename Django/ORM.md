@@ -1,6 +1,46 @@
 # ORM
 *ORM을 사용하면 SQL 반복 작업에서 벗어나, 복잡한 비즈니스 로직에 더 신경 쓸 수있다.*
 
+- **`prefetch_related()`**
+
+    *`prefetch_related()`는 새로운 QuerySet을 호출한다.*
+    - `Prefetch()` 메서드로 따로 querset을 지정해주지 않으면 `역참조모델.objects.all()` 이 기본 생성된다.
+
+    > 1번 로직
+    ```python
+    .prefetch_related(
+    '역방향참조_필드1',
+    '역방향참조_필드2',
+    )
+    ```
+
+    > 2번 로직
+    ```python
+    .prefetch_related(
+    Prefetch('역방향참조_필드1',queryset=역방향참조_모델1.objects.all()),
+    Prefetch('역방향참조_필드1',queryset=역방향참조_모델2.objects.all()),
+    )
+    ```
+    *1번로직과 2번로직은 동일하다.* 
+    
+    <br>
+
+    > `Prefetch()` 에 선언된 queryset들은 새로운 QuerySet이므로 자유롭게 작성이 가능하다.
+    ```python
+    .prefetch_related(
+    Prefetch('역방향참조_필드1',
+            queryset=역방향참조_모델1.objects
+                     .select_related('역방향참조_모델1의_정방향참조_필드')
+                     .prefetch_related('역방향참조_모델1의_역방향참조_필드')
+                     .annotate(커스텀필드_블라블라=~~~~~~)
+                     .filter(조건절_블라블라~~~)                   
+     ),
+  
+    )
+    ```
+
+
+
 > Django
 ```python
 ```
@@ -199,3 +239,13 @@ INNER JOIN "orm_practice_app_company" this_is_join_table_name
 WHERE  this_is_join_table_name."id" IS NOT NULL ;
 ```
 - `prefetch_related()` 은 `Prefetch()` 로 `select_related()` 은 `FilterRelation()` 로 조건절을 좀 더 섬세하게 다룰 수 있다.
+
+
+<br><hr><br>
+
+## QuerySet 이 INNER, OUTER JOIN 을 선택하는 기준
+*모델을 마이그레이션 할때
+f**ield= model.ForeignKey( null = False )** 이면 **Inner Join** 이고 **field= model.ForeignKey( null = True )** 이면 **Left Outer Join**이다.*
+
+- `null=True` 인 외래키 필드를 `INNER JOIN` 하기
+    - 이는 할 수 없어야 하지만 `null=True` 인 엔티티를 `QuerySet` 이 `INNER JOIN` 으로 조회한다면 `JOIN` 되는 테이블쪽이 `null` 이면 SQL결과 데이터에서 누락된다.
