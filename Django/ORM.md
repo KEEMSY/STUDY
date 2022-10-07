@@ -292,3 +292,114 @@ raw_queryset = (User.objects
     - `extra()`: 메인쿼리에 `SQL` 을 추가 반영하는 메서드
 
 <br><hr><br>
+
+## **QuerySet의 반환 타입**
+*`QuerySet` 의 반환타입에는 `ModelIterable`, `ValuesIterable`, `ValueListIterable`, `FlatValuesListIterable`, `NamedValuesListIterable` 가 존재한다.*
+>Django
+```python
+# ModelIterable
+result : List[Model] = Model.objects.all() 
+                                    .only() # 지정한 필드만 조회
+                                    .defer() # 지정한 필드를 제외하고 조회
+# ValuesIterable
+result : List[Dict[str,Any]] = Model.objects.valeus()
+  
+# ValuesListIterable
+result : List[Tuple[str,Any]] = Model.objects.values_list()
+  
+# FlatValuesListIterable  (ValuesListIterable 상속받음)
+result : List[Any] = Model.objects.values_list('pk',flat=True)
+  
+# NamedValuesListIterable  (ValuesListIterable 상속받음)
+result : List[Raw] = Model.objects.values_list(named=True)
+                      # django에서 제공하는 Raw라는 객체에 데이터를 담아서 리턴
+```
+- values() 와 values_list() 는 only() 또는 defer()을 통해 대체하는 것이 좋다.
+    - ModelIterable 만이 Model의 property와 method 들에 접근 가능하기 때문이다.
+    <br>
+    
+        *`@property` 는 메서드를 필드처럼 사용할 수 있게 해준다.*
+
+    - `values()`, `values_list()` 으로 데이터를 반환 받으려 하면, `QuerySet` 은 `select_related()`, `prefech_related()` 에 옵션을 주더라도 이를 무시한다.
+        >Django
+        ```python
+        # ModelIterable 인 경우 객체 반환 (문제없음)
+        qqq = list(User.objects.prefetch_related('user_permissions').filter(id=1))
+      
+        # 메인쿼리 
+        SELECT * FROM `auth_user` WHERE `auth_user`.`id` = 1; 
+       
+        # 추가 쿼리(셋)
+        SELECT * 
+        FROM `auth_permission` 
+        INNER JOIN `auth_user_user_permissions` ON (`auth_permission`.`id` = `auth_user_user_permissions`.`permission_id`) 
+        INNER JOIN `django_content_type` ON (`auth_permission`.`content_type_id` = `django_content_type`.`id`)
+        WHERE `auth_user_user_permissions`.`user_id` IN (1) ORDER BY `django_content_type`.`app_label` ASC, `django_content_type`.`model` ASC, `auth_permission`.`codename` ASC; args=(1,)
+
+        # 결과값: [<User: username1>]
+
+        -----------------
+
+        # Values (select_related 무시하고 JOIN 안함 & 특정참조_필드에 해당하는 모델이 아닌 외래키 값 자체를 반환 )
+        gg = list(Product.objects.select_related('product_owned_company').filter(id=1).values())
+
+
+        (0.002) SELECT `orm_practice_app_product`.`id`, `orm_practice_app_product`.`name`,
+        `orm_practice_app_product`.`price`, `orm_practice_app_product`.`product_owned_company_id`
+        FROM `orm_practice_app_product` 
+        WHERE `orm_practice_app_product`.`id` = 1; 
+
+        # .select_related('product_owned_company') 를 무시하고 JOIN 하지 않는다... 
+        # 그리고 raw단위로 데이터를 가져와서 product_owned_company객체 대신 foreignKey pk를 가져옴 
+        [{'id': 1, 'name': 'product_name1', 'price': 94772, 'product_owned_company_id': 40}]
+
+
+        ---------------
+
+        # Values ( select_related 된 참조모델의 데이터를 받으려면 'product_owned_company__name' 이렇게 직접 명시해줘야 JOIN 한다)
+        gg = list(Product.objects.select_related('product_owned_company').filter(id=1).values('product_owned_company__name'))
+        
+        
+        (0.003) SELECT `orm_practice_app_company`.`name` 
+        FROM `orm_practice_app_product` 
+        LEFT OUTER JOIN `orm_practice_app_company` ON (`orm_practice_app_product`.`product_owned_company_id` = `orm_practice_app_company`.`id`) 
+        WHERE `orm_practice_app_product`.`id` = 1; args=(1,)
+        # JOIN 하려면 values() 안에 전부 명시해줘야한다. 또는 annotate()
+        # values_list()도 동일하다.
+        # 결과값: [{'product_owned_company__name': 'company_name40'}]
+
+        ---------------
+
+
+        # ValuesList ( .prefetch_related 를 무시하고 그냥 JOIN)
+        qqq = list(User.objects.prefetch_related('user_permissions').filter(id=1).values_list('user_permissions'))
+        
+
+        # 메인쿼리 (prefetch_related 무시하고 메인쿼리에 JOIN 됨... )
+        SELECT `auth_user_user_permissions`.`permission_id` 
+        FROM `auth_user` 
+        LEFT OUTER JOIN `auth_user_user_permissions` ON (`auth_user`.`id` = `auth_user_user_permissions`.`user_id`) 
+        WHERE `auth_user`.`id` = 1; args=(1,)
+        
+        # 결과값: [(3,), (4,)]
+
+
+        ---------------
+
+
+        # NamedValuesList ( .prefetch_related 를 무시하고 그냥 JOIN)
+        qqq = list(User.objects.prefetch_related('user_permissions').filter(id=1).values_list('user_permissions', named=True))
+        
+        # 메인쿼리 ()
+        SELECT `auth_user_user_permissions`.`permission_id` 
+        FROM `auth_user` 
+        LEFT OUTER JOIN `auth_user_user_permissions` ON (`auth_user`.`id` = `auth_user_user_permissions`.`user_id`)
+        WHERE `auth_user`.`id` = 1; args=(1,)
+        
+        # 결과값: [Row(user_permissions=3), Row(user_permissions=4)]
+        ```
+        - 특정 참조_필드에 해당하는 모델이 아닌 외래키 값 자체를 반환한다.
+        - **`values()` 와 `values_list()` 를 붙이는 것 만으로도 발생하는 쿼리가 변할 수 있다.**
+            - `model` 단위로 데이터를 변환하는 것이 아니라 `row` 단위로 데이터를 반환한다.
+            - `join` 된 값들을 가져오려면 전부 값을 선언해줘야 한다.
+            - 모델이 아니라 `property` 들에 접근이 안되서 불편하다.
