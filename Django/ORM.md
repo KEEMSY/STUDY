@@ -243,9 +243,52 @@ WHERE  this_is_join_table_name."id" IS NOT NULL ;
 
 <br><hr><br>
 
-## QuerySet 이 INNER, OUTER JOIN 을 선택하는 기준
+## **QuerySet 이 INNER, OUTER JOIN 을 선택하는 기준**
 *모델을 마이그레이션 할때
 f**ield= model.ForeignKey( null = False )** 이면 **Inner Join** 이고 **field= model.ForeignKey( null = True )** 이면 **Left Outer Join**이다.*
 
 - `null=True` 인 외래키 필드를 `INNER JOIN` 하기
     - 이는 할 수 없어야 하지만 `null=True` 인 엔티티를 `QuerySet` 이 `INNER JOIN` 으로 조회한다면 `JOIN` 되는 테이블쪽이 `null` 이면 SQL결과 데이터에서 누락된다.
+
+
+<br><hr><br>
+
+## **RawQuerySet**
+*Django의 `raw()` 메소드는 `RawQuerySet` 을 반환하는데 이는 완전 `NativeSQL` 이 아니다.*
+- `RawQuerySet` 과 `QuerySet` 의 차이점은 메인 쿼리를 `NativeSQL` 로 작성한다는 것이다.
+
+>Django
+```python
+raw_queryset = (User.objects
+                .raw('select * from auth_user where id=1')
+                .prefetch_related('user_permissions')
+)
+```
+- 추가 쿼리셋인 `.prefetch_related()` 와 `Prefetch()` 사용은 자유롭다.
+- RawQuerySet 사용시 주의사항
+    - 모델의 `property` 이름들이 반드시 매칭되어야한다.
+    - 매칭이 되지 않을 시, 해당 `property` 가 비어버리게 되고, `RawQuerySet` 은 그 값을 찾기위해 다시 쿼리를 호출한다.
+    ```python
+    raw_queryset = ( User.objects.raw(
+               'select id, username as 없는_프로퍼티_명, 
+                   from auth_user where id=1',
+               )
+    list(raw_queryset) # 애트리뷰트와 프로퍼티가 매칭되지 못해서 sql을 두번 호출한다.
+
+
+    (0.002) select id, username as ddd from auth_user where id=1; 
+    (0.002) SELECT `auth_user`.`id`, `auth_user`.`username` # 불필요쿼리호출
+                    FROM `auth_user` WHERE `auth_user`.`id` = 1;
+    ```
+
+
+<br>
+
+- **`.raw()` 와 사용이 불가능한 메서드**
+    - `.select_related()`: 메인쿼리의 `JOIN` 옵션을 주는 메서드
+    - `FilteredRelation()`: `ON` 절 제어 옵션 역시 `JOIN` 이 되지 않아 불가능하다.
+    - `.annotate()`: 메인쿼리에 `AS` 옵션을 주는 메서드
+    - `.order_by()`: 메인쿼리에 `ORDER BY` 옵션을 주는 메서드
+    - `extra()`: 메인쿼리에 `SQL` 을 추가 반영하는 메서드
+
+<br><hr><br>
