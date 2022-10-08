@@ -403,3 +403,59 @@ result : List[Raw] = Model.objects.values_list(named=True)
             - `model` 단위로 데이터를 변환하는 것이 아니라 `row` 단위로 데이터를 반환한다.
             - `join` 된 값들을 가져오려면 전부 값을 선언해줘야 한다.
             - 모델이 아니라 `property` 들에 접근이 안되서 불편하다.
+
+<br><hr><br>
+
+## **Q()**
+*`Q` 객체는 SQL 쿼리에서의 `WHERE` 절에 해당하는 기능을 수행 할 수 있다.*
+- `Q()` 객체를 이용해 `OR`, `AND`, `NOT` 연산을 수행 할 수 있다.
+
+<br>
+
+>`OR` 연산
+```python
+>>> from django.db.models import Q
+>>> queryset = User.objects.filter(
+    Q(first_name__startswith='R') | Q(last_name__startswith='D')
+)
+>>> queryset
+<QuerySet [<User: Ricky>, <User: Ritesh>, <User: Radha>, <User: Raghu>, <User: rishab>]>
+```
+
+<br>
+
+>`AND` 연산
+```python
+>>> queryset = User.objects.filter(
+    Q(first_name__startswith='R') & Q(last_name__startswith='D')
+)
+>>> queryset
+<QuerySet [<User: Ricky>, <User: Ritesh>, <User: rishab>]>
+```
+
+<br><br>
+
+>**예제: 이름(first_name)이 ‘R’로 시작하되, 성(last_name)에 ‘Z’가 포함되지 않은 사용자를 모두 구하라**
+```python
+>>> queryset = User.objects.filter(
+    Q(first_name__startswith='R') & ~Q(last_name__startswith='Z')
+ )
+```
+
+>**에제로 실행되는 SQL 쿼리**
+```sql
+SELECT "auth_user"."id",
+       "auth_user"."password",
+       "auth_user"."last_login",
+       "auth_user"."is_superuser",
+       "auth_user"."username",
+       "auth_user"."first_name",
+       "auth_user"."last_name",
+       "auth_user"."email",
+       "auth_user"."is_staff",
+       "auth_user"."is_active",
+       "auth_user"."date_joined"
+FROM "auth_user"
+WHERE ("auth_user"."first_name"::text LIKE R%
+       AND NOT ("auth_user"."last_name"::text LIKE Z%))
+```
