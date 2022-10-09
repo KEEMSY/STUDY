@@ -459,3 +459,110 @@ FROM "auth_user"
 WHERE ("auth_user"."first_name"::text LIKE R%
        AND NOT ("auth_user"."last_name"::text LIKE Z%))
 ```
+<br>
+
+> **lookup filter(혹은 exclude)**
+
+*필드 별 구체적인 같에 대한 비교를 가능하게 하는 `Django` 의 내장 모듈*
+
+- `__contains`: 특정 문자가 포함된 것을 찾을 때 사용(**대소문자 구분**)
+    ```python
+    # english_name 컬럼에 'Blend'이라는 단어가 들어간 데이터 조회 (단, 대소문자 구분)
+    In : Drink.objects.filter(english_name__contains="blend")
+    Out: <QuerySet []>
+
+    In :  Drink.objects.filter(english_name__contains="Blend")
+    Out: <QuerySet [<Drink: 망고 패션 후르츠 블렌디드>, <Drink: 딸기 요거트 블렌디드>]>
+    ```
+
+    <br>
+
+- `__icontains`: 특정 문자가 포함된 것을 찾을 때 사용(**대소문자 구분 X**)
+    ```python
+    # english_name 컬럼에 'blend'이라는 단어가 들어간 데이터 조회 (대소문자를 구분하지 않음)
+    In : Drink.objects.filter(english_name__icontains="blend")
+    Out: <QuerySet [<Drink: 망고 패션 후르츠 블렌디드>, <Drink: 딸기 요거트 블렌디드>]>
+
+    In : Drink.objects.filter(english_name__icontains="Blend")
+    Out: <QuerySet [<Drink: 망고 패션 후르츠 블렌디드>, <Drink: 딸기 요거트 블렌디드>]>
+    ```
+    <br>
+
+
+- `__startswith`: 특정 문자로 시작하는 것을 찾을 경우 사용(**대소문자 구분**)
+    ```python
+    # english_name 컬럼에 'Nitro'로 시작하는 문자열을 가진 데이터 조회 (단, 대소문자 구분) 
+    In : Drink.objects.filter(english_name__startswith="Nitro")
+    Out: <QuerySet [<Drink: 나이트로 바닐라 크림>, <Drink: 나이트로 쇼콜라 클라우드>]>
+
+    In : Drink.objects.filter(english_name__startswith="nitro")
+    Out: <QuerySet []>
+    ```
+
+    <br>
+
+- `__endswith`: 특정 문자로 끝나는 것을 찾을 때 사용(**대소문자 구분**)
+    ```python
+    # english_name 컬럼에서 'Tea'로 끝나는 문자를 가진 데이터 조회 (대소문자 구분)
+    In : Drink.objects.filter(english_name__endswith="Tea")
+    Out: <QuerySet [<Drink: 라임패션티>]>
+
+    In : Drink.objects.filter(english_name__endswith="tea")
+    Out: <QuerySet []>
+    ```
+
+    <br>
+
+- `__gt`: 특정 값보다 큰 데이터 값을 조회(gt = greater than)
+    ```python
+    # id가 3보다 큰 데이터만 조회(3포함 X)
+    In : Drink.objects.filter(id__gt=3)
+    Out: <QuerySet [<Drink: 딸기 요거트 블렌디드>, <Drink: 블랙 티 레모네이드>, <Drink: 쿨라임 피지오>, <Drink: 말차 초콜릿 라떼>, <Drink: 라임패션티>]>
+    ```
+    <br>
+
+- `__lt`: 특정 값보다 작은 데이터 값을 조회(lt = less than)
+    ```python
+    # id가 3보다 작은 데이터만 조회
+    In : Drink.objects.filter(id__lt=3)
+    Out: <QuerySet [<Drink: 나이트로 바닐라 크림>, <Drink: 나이트로 쇼콜라 클라우드>]>
+    ```
+
+    <br>
+
+- `__isnull`: True 로 지정 시 특정 필드 값이 null 인 것만 조회
+    ```python
+    # description 컬럼이 null인 것만 조회
+    In : Drink.objects.filter(description__isnull=True)
+    Out: <QuerySet [<Drink: 나이트로 바닐라 크림>, <Drink: 나이트로 콜드 브루>]>
+
+    # description 컬럼이 null이 아닌 것만 조회
+    In : Drink.objects.filter(description__isnull=False)
+    Out: <QuerySet [<Drink: 망바>, <Drink: 딸요>, <Drink: 말차라떼>, <Drink: 얼그레이>]>
+    ```
+
+    <br>
+
+- `__in`: 리스트 안에 지정한 문자열들 중에 하나라도 포함된 데이터를 찾을 때 사용한다.(**단, 문자열과 정확히 일치해야한다.**)
+    ```python
+    # english_name 필드에 'Malcha' 또는 'Nitro Cold Brew' 값이 있는 것만 조회
+    In : Drink.objects.filter(english_name__in=['Malcha', 'Nitro Cold Brew'])
+    Out: <QuerySet [<Drink: 나이트로 쇼콜라 클라우드>, <Drink: 말차 초콜릿 라떼>]>
+
+
+    # english_name 필드에 'Malcha' 또는 'Nitro' 값이 있는 것만 조회
+    In : Drink.objects.filter(english_name__in=['Malcha', 'Nitro'])
+    Out: <QuerySet [<Drink: 말차 초콜릿 라떼>]>
+    ```
+
+    <br>
+
+- `__year`, `__month`, `__day`, `__date`: `date` 타입의 필드에서 특정 년(`__year`), 월(`__month`), 일(`__day`) 혹은 특정 날짜((__date : YY-MM-DD 형식)의 데이터를 찾을 때 사용한다.
+
+    ```python
+    # pub_date 필드에서 년도가 2021 인 것만 조회
+    In : Question.objects.filter(pub_date__year='2021')
+    Out: <QuerySet [<Question: What's new?>, <Question: new>]>
+    ```
+
+<br><hr><br>
