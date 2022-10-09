@@ -1,6 +1,21 @@
 # ORM
 *ORM을 사용하면 SQL 반복 작업에서 벗어나, 복잡한 비즈니스 로직에 더 신경 쓸 수있다.*
 
+- QuerySet 은 1개의 Query 와 0 ~ N 개의 QuerySet으로 이루어져 있다.
+- 수행하고자하는 SQL 보다 가져오고자 하는 데이터 리스트를 먼저 떠올리자.
+    - 테이블 연관성에는 `Q(), Prefetch(), F()` 가 주로 사용 된다.
+- QuerySet이 제공하는 SQL 구조를 벗어난다면, RawQuerySet 을 사용한다.
+- NativeSQL 사용을 망설이지 말자.
+    - SQL 성능이 중요한 경우라면 가끔씩은 ORM으로 원하는 쿼리 결과를 얻을 수 없을 때도 존재한다.
+    - 가독성을 위해 사용하는 것이 좋을 수도 있다.
+    - 단조로운 SQL 작업을 줄일 수 있으며, Object와 Relational 을 Mapping 해 준다는 ORM의 장점을 얻을 수 없다면 NativeSQL을 사용하자.
+
+<br>
+
+- `Model` 을 놓고 `annotate`, `select_related()`, `filter` 그리고 `prefetch_related()` 순서로 `QuerySet` 을 작성하는 것이 좋다.(이 순서가 실제로 발생하는 SQL의 발생 순서와 가장 유사하다.)
+    - `prefetch_related()` 가 `filter()` 앞에 있는 것은 피하도록 하자.
+
+<br>
 
 - **`prefetch_related()`**
 
