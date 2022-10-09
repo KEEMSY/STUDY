@@ -1,6 +1,7 @@
 # ORM
 *ORM을 사용하면 SQL 반복 작업에서 벗어나, 복잡한 비즈니스 로직에 더 신경 쓸 수있다.*
 
+
 - **`prefetch_related()`**
 
     *`prefetch_related()`는 새로운 QuerySet을 호출한다.*
@@ -566,3 +567,75 @@ WHERE ("auth_user"."first_name"::text LIKE R%
     ```
 
 <br><hr><br>
+
+## **F( )**
+
+*F() 객체는 모델의 필드 혹은 어노테이트된 열의 값을 나타낸다. 실제로 데이터베이스에서 python 메모리로 가져오지 않고, 모델 필드 값을 참조하고 이를 데이터베이스에서 작업 할 수 있다.*
+
+- python 이 아닌 데이터베이스에서 연산을 처리한다.
+- 몇몇 작업에 필요한 쿼리 수를 줄일 수 있다.
+>**`F()` 사용 전**
+```python
+reporter = Reporters.objects.get(name='Tintin')
+reporter.stories_filed += 1
+reporter.save()
+```
+1. `get()` 매서드로 객체를 얻어온다.
+2. 객체의 `stories_filed` 필드 값을 `python` 메모리에 가져온다.
+3. **`python` 연산자를 이용해 값을 1 증가** 시킨다. 
+4. `save()` 메서드를 사용하여 DB에 저장한다.
+
+*많은 양의 객체를 얻어온 후, 모든 객체에 대한 값 변경이 필요하다면 각 객체마다 
+**DB에서 값 얻기 → Python 메모리에 저장 후 변경 → DB에 다시 저장** 의 작업이 반복된다.*
+
+<br>
+
+>**`F()` 사용 후**
+```python
+Reporters.objects.filter(name='Tintin').update(stories_filed=F('stories_filed') + 1)
+```
+1. `get()` 메서드로 객체를 얻어온다.
+2. 객체의 `stories_filed` 값을 `F('stories_filed') + 1)` 를 저장한다.
+3. 변경된 `stories_filed` 값을 `DB` 에 반영한다.
+*2 라는 값을 직접 저장하는 것이 아닌, **현재의 값에서 +1 된 값을 저장하는 SQL 구문**이다.(save() 메서드 사용 시 해당 구문이 실행된다.)*
+
+<br>
+
+- F() 객체를 사용하면 경쟁조건(Race condition)을 피할 수 있다.
+    - 어노테이션, 필터링, 정렬 등에 굉장히 유용하다.
+    >**정렬에 사용되는 경우**
+    ```python
+    from django.db.models import F
+    Company.object.order_by(F('last_contacted').desc(nulls_last=True))
+    ```
+
+    <br>
+
+    >**어노테이션에 사용되는 경우**
+    ```python
+    company = Company.objects.annotate(
+    chairs_needed=F('num_employees') - F('num_chairs'))
+    ```
+ <br>
+
+>**주의사항**
+```python
+from django.db.models import F
+reporter = Reporters.objects.get(name='Tintin')
+reporter.stories_filed = F('stories_filed') + 1
+reporter.save()
+```
+- `stories_filed` 의 증가된 값을 확인하기 위해서는 다시 값을 불러와야한다.
+- `F()` 객체를 사용하여 값을 변경하였을 때, 값이 직접 대입되는 것이 아닌 연산에 맞는 SQL 구문을 적용시키는 것이다.
+- `F()` 객체는 모델의 인스턴스를 저장한 후에도 값이 유지되기 때문에, 추가로 **`save()`를 진행하면 SQL 구문이 또 적용**된다.
+    - 이 때는 `refresh_from_db()` 를 사용하여 DB에서 값을 로드하여 이러한 지속성을 막는다.
+    >**`refresh_from_db()`**
+    ```python
+    from django.db.models import F
+
+    reporter = Reporters.objects.get(name='Tintin')
+    reporter.stories_filed = F('stories_filed') + 1
+    reporter.save()
+
+    repoter.refresh_from_db()
+    ```
