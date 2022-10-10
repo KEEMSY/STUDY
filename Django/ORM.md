@@ -1,10 +1,10 @@
 # ORM
 *ORM을 사용하면 SQL 반복 작업에서 벗어나, 복잡한 비즈니스 로직에 더 신경 쓸 수있다.*
 
-- QuerySet 은 1개의 Query 와 0 ~ N 개의 QuerySet으로 이루어져 있다.
+- `QuerySet` 은 1개의 `Query` 와 0 ~ N 개의 `QuerySet` 으로 이루어져 있다.
 - 수행하고자하는 SQL 보다 가져오고자 하는 데이터 리스트를 먼저 떠올리자.
     - 테이블 연관성에는 `Q(), Prefetch(), F()` 가 주로 사용 된다.
-- QuerySet이 제공하는 SQL 구조를 벗어난다면, RawQuerySet 을 사용한다.
+- `QuerySet` 이 제공하는 SQL 구조를 벗어난다면, `RawQuerySet` 을 사용한다.
 - NativeSQL 사용을 망설이지 말자.
     - SQL 성능이 중요한 경우라면 가끔씩은 ORM으로 원하는 쿼리 결과를 얻을 수 없을 때도 존재한다.
     - 가독성을 위해 사용하는 것이 좋을 수도 있다.
@@ -12,61 +12,12 @@
 
 <br>
 
-- `Model` 을 놓고 `annotate`, `select_related()`, `filter` 그리고 `prefetch_related()` 순서로 `QuerySet` 을 작성하는 것이 좋다.(이 순서가 실제로 발생하는 SQL의 발생 순서와 가장 유사하다.)
+- `Model` 을  `annotate`, `select_related()`, `filter` 그리고 `prefetch_related()` 순서로 `QuerySet` 을 작성하는 것이 좋다.(이 순서가 실제로 발생하는 SQL의 발생 순서와 가장 유사하다.)
     - `prefetch_related()` 가 `filter()` 앞에 있는 것은 피하도록 하자.
 
 <br>
 
-- **`prefetch_related()`**
-
-    *`prefetch_related()`는 새로운 QuerySet을 호출한다.*
-    - `Prefetch()` 메서드로 따로 querset을 지정해주지 않으면 `역참조모델.objects.all()` 이 기본 생성된다.
-
-    > 1번 로직
-    ```python
-    .prefetch_related(
-    '역방향참조_필드1',
-    '역방향참조_필드2',
-    )
-    ```
-
-    > 2번 로직
-    ```python
-    .prefetch_related(
-    Prefetch('역방향참조_필드1',queryset=역방향참조_모델1.objects.all()),
-    Prefetch('역방향참조_필드1',queryset=역방향참조_모델2.objects.all()),
-    )
-    ```
-    *1번로직과 2번로직은 동일하다.* 
-    
-    <br>
-
-    > `Prefetch()` 에 선언된 queryset들은 새로운 QuerySet이므로 자유롭게 작성이 가능하다.
-    ```python
-    .prefetch_related(
-    Prefetch('역방향참조_필드1',
-            queryset=역방향참조_모델1.objects
-                     .select_related('역방향참조_모델1의_정방향참조_필드')
-                     .prefetch_related('역방향참조_모델1의_역방향참조_필드')
-                     .annotate(커스텀필드_블라블라=~~~~~~)
-                     .filter(조건절_블라블라~~~)                   
-     ),
-  
-    )
-    ```
-
-
-
-> Django
-```python
-```
-
->MySQL
-```sql
-```
-
-
-## **QuerySet vs SQL**
+## **`QuerySet` vs `SQL`**
 > Django
 ```python
 (Model.objects
@@ -120,13 +71,13 @@ SELECT *
 
 <br>
 
-***select_related또는 prefetch_related 없는 QuerySet에서 Join 또는 +1 Query(추가 쿼리)가 발생했다면 명시적으로라도 select_related와 prefetch_related를 붙여주는 것이 좋다.***
+***`select_related` 또는 `prefetch_related` 없는 `QuerySet` 에서 `Join` 또는 +1 `Query`(추가 쿼리)가 발생했다면 명시적으로라도 `select_related` 와 `prefetch_related` 를 붙여주는 것이 좋다.***
 - 제 3자가 소스코드를 읽었을 때, "해당 필드는 JOIN을 해서 가져왔구나" 혹은 "추가쿼리로 조회했구나" 등의 정보를 좀더 명확하게 알 수 있기 때문이다.
 
 
 <br><hr><br>
 
-## **prefetch_related()를 사용했으나, QuerySet이 JOIN으로 데이터를 조회하는 경우**
+## **`prefetch_related()`를 사용했으나, `QuerySet` 이 `JOIN` 으로 데이터를 조회하는 경우**
 >Django
 ```python
 company_queryset: QuerySet = Company.objects.prefetch_related('product_set')
@@ -193,7 +144,7 @@ SELECT *
 
 <br><hr><br>
 
-## **Prefetch(): +1 Query에 조건 걸기**
+## **`Prefetch()`: +1 Query에 조건 걸기**
 >MySQL
 - 위에서의 **prefetch_related()를 사용했으나, QuerySet이 JOIN으로 데이터를 조회하는 경우** 에서 의도한 쿼리는 아래와 같다.
 ```sql
@@ -223,7 +174,7 @@ WHERE "orm_practice_app_product"."product_owned_company_id" IN (1)
 
 <br><hr><br>
 
-## **FilterdRelation(): JOIN ON 절에 조건 걸기**
+## **`FilterdRelation()`: JOIN ON 절에 조건 걸기**
 *INNER JOIN의 경우 큰 차이가 없지만 OUTER JOIN의 경우 JOIN ON 절에 조건을 걸어주는 것과 WHERE 절에 조건을 걸어주는 것에는 성능 차이를 보일 수 있다.*
 
 - ON 절은 JOIN 하면서 조건절을 체크하지만, WHERE 절은 JOIN 결과를 완성 시킨 후에 조절을 체크한다.
@@ -269,8 +220,8 @@ f**ield= model.ForeignKey( null = False )** 이면 **Inner Join** 이고 **field
 
 <br><hr><br>
 
-## **RawQuerySet**
-*Django의 `raw()` 메소드는 `RawQuerySet` 을 반환하는데 이는 완전 `NativeSQL` 이 아니다.*
+## **`RawQuerySet`**
+*Django의 raw() 메소드는 RawQuerySet 을 반환하는데 이는 완전 NativeSQL 이 아니다.*
 - `RawQuerySet` 과 `QuerySet` 의 차이점은 메인 쿼리를 `NativeSQL` 로 작성한다는 것이다.
 
 >Django
@@ -310,7 +261,7 @@ raw_queryset = (User.objects
 <br><hr><br>
 
 ## **QuerySet의 반환 타입**
-*`QuerySet` 의 반환타입에는 `ModelIterable`, `ValuesIterable`, `ValueListIterable`, `FlatValuesListIterable`, `NamedValuesListIterable` 가 존재한다.*
+*QuerySet 의 반환타입에는 ModelIterable, ValuesIterable, ValueListIterable, FlatValuesListIterable, NamedValuesListIterable 가 존재한다.*
 >Django
 ```python
 # ModelIterable
@@ -422,13 +373,13 @@ result : List[Raw] = Model.objects.values_list(named=True)
 
 <br><hr><br>
 
-## **Q()**
-*`Q` 객체는 SQL 쿼리에서의 `WHERE` 절에 해당하는 기능을 수행 할 수 있다.*
+## **`Q()`**
+*Q 객체는 SQL 쿼리에서의 WHERE 절에 해당하는 기능을 수행 할 수 있다.*
 - `Q()` 객체를 이용해 `OR`, `AND`, `NOT` 연산을 수행 할 수 있다.
 
 <br>
 
->`OR` 연산
+>**`OR` 연산**
 ```python
 >>> from django.db.models import Q
 >>> queryset = User.objects.filter(
@@ -440,7 +391,7 @@ result : List[Raw] = Model.objects.values_list(named=True)
 
 <br>
 
->`AND` 연산
+>**`AND` 연산**
 ```python
 >>> queryset = User.objects.filter(
     Q(first_name__startswith='R') & Q(last_name__startswith='D')
@@ -479,7 +430,7 @@ WHERE ("auth_user"."first_name"::text LIKE R%
 
 > **lookup filter(혹은 exclude)**
 
-*필드 별 구체적인 같에 대한 비교를 가능하게 하는 `Django` 의 내장 모듈*
+*필드 별 구체적인 같에 대한 비교를 가능하게 하는 Django 의 내장 모듈*
 
 - `__contains`: 특정 문자가 포함된 것을 찾을 때 사용(**대소문자 구분**)
     ```python
@@ -583,7 +534,7 @@ WHERE ("auth_user"."first_name"::text LIKE R%
 
 <br><hr><br>
 
-## **F( )**
+## **`F()`**
 
 *F() 객체는 모델의 필드 혹은 어노테이트된 열의 값을 나타낸다. 실제로 데이터베이스에서 python 메모리로 가져오지 않고, 모델 필드 값을 참조하고 이를 데이터베이스에서 작업 할 수 있다.*
 
@@ -657,6 +608,47 @@ reporter.save()
 
 <br><hr><br>
 
+## **`[CLASS NAME].object.prefetch_related()`**
+
+*prefetch_related()는 새로운 QuerySet을 호출한다.*
+- `Prefetch()` 메서드로 따로 querset을 지정해주지 않으면 `역참조모델.objects.all()` 이 기본 생성된다.
+
+> 1번 로직
+```python
+.prefetch_related(
+'역방향참조_필드1',
+'역방향참조_필드2',
+)
+```
+
+> 2번 로직
+```python
+.prefetch_related(
+Prefetch('역방향참조_필드1',queryset=역방향참조_모델1.objects.all()),
+Prefetch('역방향참조_필드1',queryset=역방향참조_모델2.objects.all()),
+)
+```
+*1번로직과 2번로직은 동일하다.* 
+
+<br>
+
+> `Prefetch()` 에 선언된 queryset들은 새로운 QuerySet이므로 자유롭게 작성이 가능하다.
+```python
+.prefetch_related(
+Prefetch('역방향참조_필드1',
+        queryset=역방향참조_모델1.objects
+                    .select_related('역방향참조_모델1의_정방향참조_필드')
+                    .prefetch_related('역방향참조_모델1의_역방향참조_필드')
+                    .annotate(커스텀필드_블라블라=~~~~~~)
+                    .filter(조건절_블라블라~~~)                   
+    ),
+
+)
+```
+
+<br><hr><br>
+
+
 ## **`[CLASS NAME].objects.count()`**
 *QuerySet에 포함된 데이터 개수를 리턴한다.*
 ```python
@@ -694,7 +686,8 @@ Out: <QuerySet [{'name': '음료'}, {'name': '푸드'}, {'name': '상품'}, {'na
 
 <br><hr><br>
 
-## `[CLASS NAME].objects.valuse_list()`
+
+## **`[CLASS NAME].objects.valuse_list()`**
 *values()와 같으나 QuerySet의 내용을 딕셔너리가 아닌 튜플 타입으로 반환한다.*
 ```python
 In : Menu.objects.values_list()
@@ -785,7 +778,7 @@ Out: {'avg_kcal': Decimal('97.500000')}
 <br><hr><br>
 
 ## **`[CLASS NAME].objects.annotate()`**
-*annotate()는 칼럼을 정의하여 준다. 또한 집계함수를 사용하여 반환할 수 있으며, SQL의 group by 절과 같은 의미라고 생각할 수 있다. 결과는 QuerySet 형태로 반환한다.*
+*`annotate()` 는 칼럼을 정의하여 준다. 또한 집계함수를 사용하여 반환할 수 있으며, SQL의 `group by` 절과 같은 의미라고 생각할 수 있다. 결과는 `QuerySet` 형태로 반환한다.*
 - Django 에서 이미 존재하는 필드의 이름과 동일한 이름으로 `annotate()` 할 수 없음을 주의한다.
 <br>
 
