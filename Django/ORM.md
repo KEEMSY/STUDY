@@ -654,3 +654,154 @@ reporter.save()
 
     repoter.refresh_from_db()
     ```
+
+<br><hr><br>
+
+## **`[CLASS NAME].objects.count()`**
+*QuerySet에 포함된 데이터 개수를 리턴한다.*
+```python
+# Drink 테이블에 몇 개의 데이터가 들어있는지 조회
+In : Drink.objects.count()
+
+Out: 8
+```
+
+<br><hr><br>
+
+## **`[CLASS NAME].objects.exists()`**
+*해당 테이블에 데이터가 들어 있는지 확인한다. 있을경우 `True`, 없을경우 `False` 를 반환한다.*
+```python
+# Menu에 name이 '음료'인 데이터가 있으면 True, 없으면 False
+In : Menu.objects.filter(name="음료").exists()
+
+Out: True
+```
+
+## **`[CLASS NAME].objects.values()`**
+*QuerySet의 내용을 딕셔너리 형태로 반환한다. 인자값에 아무 것도 넣지 않으면 해당 클래스의 모든 필드와 그 값을 보여주고, 인자값에 특정 필드를 입력하면 입력한 필드에 대한 값을 반환한다.*
+```python
+# Menu 테이블의 모든 필드를 딕셔너리 형태로 반환
+In : Menu.objects.values()
+
+Out: <QuerySet [{'id': 1, 'name': '음료'}, {'id': 2, 'name': '푸드'}, {'id': 3, 'name': '상품'}, {'id': 4, 'name': '카드'}]>
+
+
+# Menu 테이블의 name 필드만 딕셔너리 형태로 반환
+In : Menu.objects.values('name')
+
+Out: <QuerySet [{'name': '음료'}, {'name': '푸드'}, {'name': '상품'}, {'name': '카드'}]>
+```
+
+<br><hr><br>
+
+## `[CLASS NAME].objects.valuse_list()`
+*values()와 같으나 QuerySet의 내용을 딕셔너리가 아닌 튜플 타입으로 반환한다.*
+```python
+In : Menu.objects.values_list()
+
+Out: <QuerySet [(1, '음료'), (2, '푸드'), (3, '상품'), (4, '카드')]>
+
+
+In : Menu.objects.values_list('name')
+
+Out: <QuerySet [('음료',), ('푸드',), ('상품',), ('카드',)]>
+```
+
+<br><hr><br>
+
+## **`[CLASS NAME].objects.order_by()`**
+*특점 필드를 기준으로 정렬을 할 때 사용. 필드명 앞에 -가 붙으면 내림차순을 의미한다.*
+```python
+# korean_name 필드를 기준으로 오름차순 정렬
+In : Drink.objects.order_by('korean_name')
+
+Out: <QuerySet [<Drink: 나이트로 바닐라 크림>, <Drink: 나이트로 쇼콜라 클라우드>, <Drink: 딸기 요거트 블렌디드>, <Drink: 라임패션티>, <Drink: 말차 초콜릿 라떼>, <Drink: 망고 패션 후르츠 블렌디드>, <Drink: 블랙 티 레모네이드>, <Drink: 쿨라임 피지오>]>
+
+
+# korean_name 필드를 기준으로 내림차순 정렬, 두번째 기준은 id 필드
+In : Drink.objects.order_by('-korean_name', 'id')
+
+Out: <QuerySet [<Drink: 쿨라임 피지오>, <Drink: 블랙 티 레모네이드>, <Drink: 망고 패션 후르츠 블렌디드>, <Drink: 말차 초콜릿 라떼>, <Drink: 라임패션티>, <Drink: 딸기 요거트 블렌디드>, <Drink: 나이트로 쇼콜라 클라우드>, <Drink: 나이트로 바닐라 크림>]>
+```
+
+
+<br><hr><br>
+
+## **`[CLASS NAME].objects.first() // [CLASS NAME].objects.last()`**
+*QuerySet 결과 중 가장 첫번째, 혹은 가장 마지막 row만을 조회할 때 사용하며 둘 다 객체 다입으로 반환한다.*
+```python
+# 전체 조회
+In : Drink.objects.all()
+
+Out: <QuerySet [<Drink: 나이트로 바닐라 크림>, <Drink: 나이트로 쇼콜라 클라우드>, <Drink: 망고 패션 후르츠 블렌디드>, <Drink: 딸기 요거트 블렌디드>, <Drink: 블랙 티 레모네이드>, <Drink: 쿨라임 피지오>, <Drink: 말차 초콜릿 라떼>, <Drink: 라임패션티>]>
+
+
+# 가장 첫번째 row만 조회
+In : Drink.objects.first()
+
+Out: <Drink: 나이트로 바닐라 크림>
+
+
+# 가장 마지막 row만 조회
+In : Drink.objects.last()
+
+Out: <Drink: 라임패션티>
+```
+
+<br><hr><br>
+
+## **`[CLASS NAME].objects.aggregate`**
+*django의 집계함수 모듈(Avg, Max, Min, Count, Sum 등)을 사용할 때 사용하는 메소드. 집계함수들을 파라미터로 받는다. 딕셔너리 타입으로 반환한다.*
+```python
+# 집계함수를 사용하려면 import 해줘야 함
+In : from django.db.models import Max, Min, Avg, Sum
+
+# Nutrition 테이블의 id 컬럼과 one_serving_kcal 컬럼만 조회
+In : Nutrition.objects.values('id','one_serving_kcal')
+
+Out: <QuerySet [{'id': 1, 'one_serving_kcal': Decimal('75.00')}, {'id': 2, 'one_serving_kcal': Decimal('120.00')}]>
+
+
+# one_serving_kcal 값 모두 더하기
+In : Nutrition.objects.aggregate(Sum('one_serving_kcal'))
+
+Out: {'one_serving_kcal__sum': Decimal('195.00')}
+
+
+# one_serving_kcal컬럼에서 가장 큰 값과 가장 작은 값의 차이
+In : Nutrition.objects.aggregate(diff_kcal = Max('one_serving_kcal') - Min('one_serving_kcal'))
+
+Out: {'diff_kcal': Decimal('45.00')}
+
+
+# one_serving_kcal 컬럼 값들의 평균
+In : Nutrition.objects.aggregate(avg_kcal = Avg('one_serving_kcal'))
+
+Out: {'avg_kcal': Decimal('97.500000')}
+```
+
+
+
+<br><hr><br>
+
+## **`[CLASS NAME].objects.annotate()`**
+*annotate()는 칼럼을 정의하여 준다. 또한 집계함수를 사용하여 반환할 수 있으며, SQL의 group by 절과 같은 의미라고 생각할 수 있다. 결과는 QuerySet 형태로 반환한다.*
+- Django 에서 이미 존재하는 필드의 이름과 동일한 이름으로 `annotate()` 할 수 없음을 주의한다.
+<br>
+
+>Django
+```python
+In : Nutrition.objects.values('drink_id__category_id').annotate(Sum('one_serving_kcal'))
+
+Out: <QuerySet [{'drink_id__category_id': 1, 'one_serving_kcal__sum': Decimal('80.00')}, {'drink_id__category_id': 2, 'one_serving_kcal__sum': Decimal('410.00')}, {'drink_id__category_id': 3, 'one_serving_kcal__sum': Decimal('170.00')}, {'drink_id__category_id': 4, 'one_serving_kcal__sum': Decimal('425.00')}]>
+```
+
+<br>
+
+>SQL
+```sql
+select d.category_id, sum(n.one_serving_kcal)
+  from nutritions n, drinks d 
+ where n.drink_id = d.id 
+ group by d.category_id;
+```
