@@ -174,11 +174,11 @@ WHERE "orm_practice_app_product"."product_owned_company_id" IN (1)
 
 <br><hr><br>
 
-## **`FilterdRelation()`: JOIN ON 절에 조건 걸기**
+## **`FilteredRelation()`: JOIN ON 절에 조건 걸기**
 *INNER JOIN의 경우 큰 차이가 없지만 OUTER JOIN의 경우 JOIN ON 절에 조건을 걸어주는 것과 WHERE 절에 조건을 걸어주는 것에는 성능 차이를 보일 수 있다.*
 
 - ON 절은 JOIN 하면서 조건절을 체크하지만, WHERE 절은 JOIN 결과를 완성 시킨 후에 조절을 체크한다.
-- ON 절에 조건을 주고 싶다면, FIlterdRelation 을 사용한다.
+- ON 절에 조건을 주고 싶다면, FIlteredRelation 을 사용한다.
 
 >Django
 ```python
