@@ -798,3 +798,32 @@ select d.category_id, sum(n.one_serving_kcal)
  where n.drink_id = d.id 
  group by d.category_id;
 ```
+
+<br><hr><br>
+
+## **SubQuery**
+<br>
+
+>**WHERE 절의 SubQuery**
+```python
+# Django
+item = Item.objects.all()
+base = Base.objects.filter(no__in=Subquery(item.values('no')))
+
+# SQL
+SELECT *
+FROM base
+WHERE no IN (SELECT no FROM item)
+```
+
+<br>
+
+>**SELECT 절의 SubQuery**
+```python
+# Django
+item = Item.objects.all()
+base = Base.objects.annotate(no=Subquery(item.values('no')))
+
+# SQL
+SELECT *, (SELECT no FROM item) AS "no"
+FROM base
