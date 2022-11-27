@@ -335,3 +335,26 @@ kubectl의 커맨드 기본 구조는 다음 세부분으로 구성된다.
     https:kubernetes.io/docs/tasks/debug-application-cluster/debug-application-introspection/#example-debugging-pending-pods
     
     <br>
+
+<br><hr><br>
+
+> ### **컨피그맵과 시크릿 관련 리소스 타입**
+- configmap(cm)
+
+    이름: 컨피그맵
+
+    설정 파일을 저장한다.
+
+    https:kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/
+
+    <br>
+
+- secrete
+
+    이름: 시크릿
+
+    패스워드 등 비밀성이 필요한 정보를 저장한다/
+
+    https:kubernetes.io/docs/concepts/configureation/secret/
+    
+    <br>
