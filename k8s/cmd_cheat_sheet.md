@@ -250,3 +250,37 @@ kubectl의 커맨드 기본 구조는 다음 세부분으로 구성된다.
 
     <br>
 
+<br><hr><br>
+
+> ### **볼륨 관련 리소스 타입**
+- persistentvolume(pv)
+
+    이름: 퍼시스턴트 볼륨 
+
+    로우 레벨 스토리지 관리
+
+    https:kubernetes.io/docs/concepts/storage/persistent-volumes/
+
+    <br>
+
+- persistentvolumeclaim(pvc)
+
+    이름: 퍼시스턴트 볼륨 클레임
+
+    스토리지 클래스와 용량을 지정해서 논리 볼륨의 프로비저닝을 요구한다.
+
+    https:kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
+
+    <br>
+
+- storageclass(sc)
+
+    이름: 스토리지 클래스
+
+    퍼시스턴트 데이터를 보유하는 파드를 제어하는 컨트롤러이다. 퍼시스턴트 불륭과 파드를 하나씩 쌍으로 묶어 각 이름을 동일한 일련 번호를 부여하여 관리한다.
+
+    https:kubernetes.io/docs/concepts/storage/storage-classes/
+
+    <br>
+
+
