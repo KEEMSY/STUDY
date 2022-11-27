@@ -283,4 +283,55 @@ kubectl의 커맨드 기본 구조는 다음 세부분으로 구성된다.
 
     <br>
 
+<br><hr><br>
 
+> ### **클러스터의 구성 관련 리소스 타입**
+- node(no)
+
+    이름: 노드
+
+    k8s 클러스터의 워크로드를 실행하는 서버
+
+    https:kubernetes.io/docs/concepts/architecture/nodes/
+
+    <br>
+
+- apiservice
+
+    이름: API 서비스
+
+    마스터가 지원하는 API 서비스를 관리한다.
+
+    https:kubernetes.io/docs/concepts/overview/kubernetes-api/
+
+    <br>
+
+- componetstatuses(cs)
+
+    이름: 컴포넌트 상태
+
+    scheduler, controller-manager, etcd-O 에 헬스 체크 결과를 보고한다.
+
+    https:kubernetes.io/docs/concepts/overview/componets/
+
+    <br>
+
+- controllerrevision
+
+    이름: 컨트롤러 리비전
+
+    컨트롤러의 리비전 관리를 담당한다.
+
+    https:kubernetes.io/docs/tasks/manage-daemon/rollback-daemon-set/
+
+    <br>
+
+- event
+
+    이름: 이벤트
+
+    k8s 클러스터에서 발생한 이벤트를 기록하고 표시하기 위한 컨트롤러이다.
+
+    https:kubernetes.io/docs/tasks/debug-application-cluster/debug-application-introspection/#example-debugging-pending-pods
+    
+    <br>
