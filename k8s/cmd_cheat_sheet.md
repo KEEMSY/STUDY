@@ -96,7 +96,7 @@ kubectl의 커맨드 기본 구조는 다음 세부분으로 구성된다.
 
 <br><hr><hr><br>
 
-## 두번째 파라미터: (2) 리소스 타입
+## **두번째 파라미터: (2) 리소스 타입**
 작성된 리소스 타입은 다음과 같다.
 - 파드 관련
 - 서비스 관련
@@ -111,7 +111,56 @@ kubectl의 커맨드 기본 구조는 다음 세부분으로 구성된다.
 
 <br>
 
-> ## 파드 관련 리소스 타입
+> ### **파드 관련 리소스 타입**
+- pod(po)
 
-<br>
+    이름 : 파드
 
+    컨테이너의 최소 기동 단위로, 기동 시 파드 네트워크상의 IP주소를 할당 받으며, 한 개 이상의 컨테이너를 내포한다.
+    
+    https://kubernetes.io/docs/concepts/workloads/pods/
+
+    <br>
+
+- poddisruptionbudget(pdb)
+
+    이름: 파드 정지 허용 수
+
+    파드의 개수가 지정한 개수 이하가 되지 않도록 디플로이먼트, 스테이트 풀셋, 레플리카셋, 레플리케이션 컨트롤러의 동작을 제어한다.
+
+    https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+
+
+
+<br><hr><br>
+
+> ### **서비스 관련 리소스 타입**
+- service(svc)
+
+    이름: 서비스 
+
+    파드를 클라이언트에 공개
+
+    https:kubernetes.io/docs/concepts/services-networking/service/
+
+    <br>
+
+- endpoints(ep)
+
+    이름: 엔드포인트 
+
+    서비스를 제공하는 파드의 IP 주소와 포트를 관리한다.
+
+    https:kubernetes.io/docs/concepts/services-networking/connect-applications-service/#creating-a-service
+
+    <br>
+
+- ingress(ing)
+
+    이름: 인그레스 
+
+    서비스 공개, TLS 암호, 세션 유지, URL 매핑 기능을 제공한다.
+
+    https:kubernetes.io/docs/concepts/services-networking/ingress/
+
+    <br>
