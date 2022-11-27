@@ -358,3 +358,16 @@ kubectl의 커맨드 기본 구조는 다음 세부분으로 구성된다.
     https:kubernetes.io/docs/concepts/configureation/secret/
     
     <br>
+
+<br><hr><br>
+
+> ### **네임스페이스 관련 리소스 타입**
+- namespace(ns)
+
+    이름: 네임스페이스
+
+    k8s 클러스터를 논리적으로 분할해서 사용한다.
+
+    https:kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+
+    <br>
