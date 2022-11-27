@@ -164,3 +164,89 @@ kubectl의 커맨드 기본 구조는 다음 세부분으로 구성된다.
     https:kubernetes.io/docs/concepts/services-networking/ingress/
 
     <br>
+
+
+<br><hr><br>
+
+> ### **컨트롤러 관련 리소스 타입**
+- deployment(deploy)
+
+    이름: 디플로이먼트 
+
+    파드의 레플리카 수, 자기 회복, 롤아웃, 롤백 등을 제어하는 컨트롤러.
+
+    https:kubernetes.io/docs/concepts/workloads/controllers/deployment/
+
+    <br>
+
+- replicas(rs)
+
+    이름: 레플리카셋
+
+    파드의 레플리카 수를 제어하는 컨트롤러로, 디플로이먼트와 연계하여 동작한다.
+
+    https:kubernetes.io/docs/concepts/workloads/controllers/relicaset/
+
+    <br>
+
+- statefules(sts)
+
+    이름: 스테이트풀셋 
+
+    퍼시스턴트 데이터를 보유하는 파드를 제어하는 컨트롤러이다. 퍼시스턴트 불륭과 파드를 하나씩 쌍으로 묶어 각 이름을 동일한 일련 번호를 부여하여 관리한다.
+
+    https:kubernetes.io/docs/concepts/workloads/controllers/staefulset/
+
+    <br>
+
+
+- job
+
+    이름: 잡
+
+    배치 처리를 수행하는 파드를 관리하는 컨트롤러
+
+    https:kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-comletion/
+
+    <br>
+
+- cronjob
+
+    이름: 크론잡
+
+    정기적으로 실행되는 배치 처리를 관리하는 컨트롤러.
+
+    https:kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+
+    <br>
+
+- daemonset(ds)
+
+    이름: 데몬셋
+
+    모든 노드에 파드를 배치하는 컨트롤러
+
+    https:kubernetes.io/docs/concepts/workloads/controllers/daemonset/
+
+    <br>
+
+- replicationcontroller(rc)
+
+    이름: 레플리케이션 컨트롤러
+
+    파드의 레플리카 수를 제어하는 컨트롤러. 레플리카셋의 이전 버전이다.
+
+    https:kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/
+
+    <br>
+
+- horizontalpodautoscaler
+
+    이름: Horizontal Pod Autoscaler
+
+    워크로드에 따라 파드 수를 조절하는 컨트롤러.
+
+    https:kubernetes.io/docs/concepts/workloads/controllers/horizontal-pod-autoscale/
+
+    <br>
+
