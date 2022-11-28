@@ -371,3 +371,56 @@ kubectl의 커맨드 기본 구조는 다음 세부분으로 구성된다.
     https:kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
 
     <br>
+
+> ### **역할 기반 액세스 제어(RBAC) 관련 리소스 타입**
+- serviceaccount(sa)
+
+    이름: 서비스 어카운트
+
+    서비스 어카운트는 파드에서 실행되는 프로세스를 위한 어카운트이다. 접근 권한을 식별하기 위해 사용한다.
+
+    https:kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/
+
+    <br>
+
+- role
+
+    이름: 롤
+
+    일련의 권한을 기술하여 롤을 정의한다. 롤의 유효 범위는 네임스페이스로 한정된다.
+
+    https:kubernetes.io/docs/reference/access-authn-authz/rbac/
+
+    <br>
+
+- rolebinding
+
+    이름: 롤바인딩
+
+    서비스 어카운트와 롤을 바인딩 한다.
+
+    https:kubernetes.io/docs/reference/access-authn-authz/rbac/#default-roles-and-role-bindings
+
+    <br>
+
+- clusterrole
+
+    이름: 클러스터 롤
+
+    k8s 클러스터 전체에 유효한 클러스터 롤과 서비스 어카운트를 매핑한다.
+
+    https:kubernetes.io/docs/reference/access-authn-authz/rbac/#api-overview
+
+    <br>
+
+- clusterrolebinding
+
+    이름: 클러스터 롤 바인딩
+
+    k8s 전체에 유효한 클러스터 롤과 서비스 어카운트를 매핑한다.
+
+    https:kubernetes.io/docs/reference/access-authn-authz/rbac/#api-overview
+
+    <br>
+
+<br><hr><br>
