@@ -457,3 +457,24 @@ kubectl의 커맨드 기본 구조는 다음 세부분으로 구성된다.
     <br>
 
 <br><hr><br>
+
+> ### **자원 관련 리소스 타입**
+- limitrange(limits)
+
+    이름: limit range
+
+    네임스페이스 내 컨테이너의 CPU와 메모리 요구값과 상한값의 기본 값 설정
+
+    https:kubernetes.io/docs/tasks/administer-cluster.manage-resources/memory-default-namespace
+
+    <br>
+
+- resourcequota(quota)
+
+    이름: resource quota
+
+    네임스페이스별 CPU와 메모리 요구량, 상한값 설정
+
+    https:kubernetes.io/docs/concepts/policy/resource-quotas/
+    
+    <br>
