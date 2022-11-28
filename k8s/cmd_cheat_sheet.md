@@ -539,3 +539,40 @@ kubectl의 커맨드 기본 구조는 다음 세부분으로 구성된다.
     <br>
 
 참고: https://kubernetes.io/docs/reference/kubectl/overview/#output-options
+
+<br><hr><hr><br>
+
+## **kubectl 커맨드 예시**
+
+<br>
+
+> ### **클러스터의 네임스페이스 수정**
+
+여러개의 k8s 클러스터를 바꿔가면서 조작할 때 유용한 커맨드가 `config` 이다. 이 커맨드를 통해 온프레미스와 클라우드의 k8s 클러스터를 바꿔가며 조작할 수 있다.
+
+<br>
+
+```shell
+# kubeconfig 파일 설정 표시
+kubectl config view
+
+# 복수의 kubeconfig가 있는 경우, 환경 변수 KUBECONFIG에 설정해서 병합 가능
+KUBECONFIG=~/.kube/config:~/.kube/kubeconfig2 kubectl config view
+
+# 컨텍스트 목록 표시. 콘텍스트 쿄체
+kubectl config get-contexts
+kubectl config use-context my-cluster-name
+
+# 선택중인 컨텍스트 표시
+kubectl config cuurent-context
+
+# 네임 스페이스를 지정하여 콘텍스트 작성
+# 사전에 '--user=<유저명>', '--cluster=<k8s 클러스터명>' 이 지정되있어야 함.
+kubectl config set-context production-c3 --namespace=production --cluster=c3 --user=admin-c3
+
+# 콘텍스트 변경(네임스페이스 변경)
+kubectl config use-context production-c3
+```
+
+<br><hr><br>
+
