@@ -424,3 +424,36 @@ kubectl의 커맨드 기본 구조는 다음 세부분으로 구성된다.
     <br>
 
 <br><hr><br>
+
+> ### **보안관련 리소스 타입**
+- certificatesigningrequest(csr)
+
+    이름: 루트 인증서 서명 요구
+
+    인증 기관(CA)에 인증서 서명 요구 작성
+
+    https:kubernetes.io/docs/reference/access-authn-authz/rbac/#api-overview
+
+    <br>
+
+- networkpolicies(netpol)
+
+    이름: 네트워크 폴리시
+
+    네임스페이스 사이의 네트워크 접근 제어
+
+    https:kubernetes.io/docs/concepts/services-networking/network-policies/
+    
+    <br>
+
+- podsecuritypolicies(psp)
+
+    이름: 파드 시큐리티 폴리시
+
+    파드 시큐리티 관련 항목의 기본 값
+
+    https:kubernetes.io/docs/concepts/policy/pod-security-policy/
+    
+    <br>
+
+<br><hr><br>
