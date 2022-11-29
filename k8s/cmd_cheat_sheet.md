@@ -603,3 +603,27 @@ kubectl create -f https://temp.com/temp_dir/my_manifest.yaml
 
 <br>
 
+> ### **오브젝트 삭제**
+한번 만들어진 오브젝트는 지워질 때 까지 계속 존재한다. 따라서 불필요한 오브젝트는 삭제하도록 하자.
+
+매니페스트나 매니페스트가 담긴 디렉터리 일므을 지정해서 제거하는 기능을 이용하면 삭제 시 편리하다.
+
+```shell
+# 매니페스트 파일로부터 삭제
+kubectl delete -f my_manifest.yaml 
+
+# 파드 이름으로 삭제
+kubectl delete po nginx 
+
+# 디플로이 먼트 이름으로 삭제
+kubectl delete deploy web-deploy
+
+# 서비스 이름으로 삭제
+kubectl delete service webservice
+
+# 디렉터리 내 매니페스트로 삭제
+kubectl delete -f <directory>
+```
+
+<br>
+
