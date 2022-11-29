@@ -576,3 +576,30 @@ kubectl config use-context production-c3
 
 <br><hr><br>
 
+> ### **오브젝트 작성**
+
+`YAML` 형식이나 `JSON` 형식의 매니페스트로부터 오브젝트를 작성한다. 작성한 코드의 `create` 는 `apply`로 바꿔도 무방하다.
+
+`create`를 사용하는 경우 이미 해당 오브젝트명이 존재하면 이상 종료로 처리된다.
+
+`apply`는 기존에 존재하는 오브젝트에 적용할 변화가 없다면 unchanged 라고 표시되어 정상 종료로 취급된다.
+
+따라서, 오브젝트를 목적 상태로 만들기 위해서는 `apply`가 적합하며, apply를 적극 활용하자.
+
+
+```shell
+# 매니페스트 파일로부터 오브젝트 생성
+kubectl create -f my_manifest.yaml
+
+# 복수의 ㅁ내니페스트 파일을 지정하면서 작성
+kubectl create -f my_manifest1.yaml -f my_manifest2.yaml
+
+# 복수의 매니페스트가 있는 디렉토리로부터 오브젝트를 생성
+kubectl create -f <manifest_directory>
+
+# URL로 부터 오브젝트 작성
+kubectl create -f https://temp.com/temp_dir/my_manifest.yaml
+```
+
+<br>
+
