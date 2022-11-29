@@ -697,3 +697,15 @@ KUBE_EDITOR='nano' kubectl edit deploy/web-deploy
 # 파드의 라벨 추가
 kubectl label pods web-deploy-1234566789 mark=1
 ```
+
+<br>
+
+> ### **패치 적용**
+매니페스트의 일부 값을 커맨드로 적용한다.
+
+```shell
+# node1에 대한 스케줄 정지
+kubectl patch node node1 -p '{"spec":{"unschedulable":true}}'
+```
+
+<br>
