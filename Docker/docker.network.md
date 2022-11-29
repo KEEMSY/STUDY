@@ -18,6 +18,13 @@
 
 <br><br>
 
+### 네트워크 삭제
+`docker network rm [NETWORK NAME]`
+
+<br><br>
+
+
+
 ### 도커 실행 및 연결
 `docker run --network [NETWORK NAME] ...(추가 설정)...`
 
@@ -26,6 +33,12 @@
 
 ### 실행중인 컨테이너 연결
 `docker network connect [NETWORK NAME] [CONTAINER NAME]`
+
+<br><br>
+
+
+### 실행중인 컨테이너 연결해제
+`docker network disconnect [NETWORK NAME] [CONTAINER NAME]`
 
 <br><br>
 
