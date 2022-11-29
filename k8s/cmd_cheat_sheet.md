@@ -627,3 +627,55 @@ kubectl delete -f <directory>
 
 <br>
 
+### **오브젝트 표시**
+오브젝트를 표시할 때에는 get 혹은 describe 를 사용한다.
+
+get 은 하나의 오브젝트를 한 줄에 표시하고,
+
+describe는 상세한 정보를 표시한다.
+
+여러 리소스 타입을 콤마(',')로 이어서 입력하면 한번에 여러 리소스를 표시 할 수 있다.
+
+```shell
+# 서비스 리스트 표시
+kubectl get service
+kubectl get svc # 단축형
+
+
+
+# 파드의 리스트 표시
+kubectl get pods
+kubectl get po 
+
+# 모든 네임스페이스의 파드 표시
+kubectl get po --all-namespaces 
+
+# 네임스페이스 test의 파드 표시
+kubectl get po -n test
+
+# 파드의 IP 주소나 할당된 노드를 표시
+kubectl get -o wide
+
+# node1의 파드를 표시
+kubectl get po --field-selector=spec.nameNode=node1
+
+# 라벨 app=web인 파드를 표시
+kubectl get po --show-labels --selector=app=web
+
+
+
+# 파드의 상세정보 표시
+kubectl describe po # 모든 파드의 상세 정보를 표시
+
+# 파드 이름으로 지정한 파드의 상세 정보 표시
+kubectl describe po <파드명>
+
+
+
+# 디플로이먼트 표시
+kubectl get deployment
+kubectl get deploy # 단축형
+
+# 디플로이먼트와 파드를 표시
+kubectl get deploy,po
+```
