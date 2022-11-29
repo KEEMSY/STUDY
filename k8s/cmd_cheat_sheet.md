@@ -720,3 +720,25 @@ kubectl scal --relicas=5 deployment/web-delpoy
 
 <br>
 
+> ### **노드 보수**
+kubectl 커맨드 하나로 컨테이너를 실행하는 노드 하나를 보수작업을 위해서는 다음의 과정을 거친다.
+1. k8s 클러스터로 부터 분리하여 정지
+2. 작업 완료 후 파드의 실행이 스케줄링 되도록 작업
+
+<br>
+
+```shell
+# node1에 대한 스케줄 정지
+kubectl cordon node1
+
+# node1의 파드 퇴거
+kubectl drain node1 --force
+
+# node1 제거
+kubectl delete node1
+
+<node1 tutekdns, (보수작업), 기동>
+
+# node1의 스케줄 재개
+kubectl uncordon node1
+```
