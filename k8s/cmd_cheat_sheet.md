@@ -709,3 +709,14 @@ kubectl patch node node1 -p '{"spec":{"unschedulable":true}}'
 ```
 
 <br>
+
+> ### **스케일** 
+컨트롤러 파드의 레플리카 수를 지정하여 처리하는 병렬성을 조절 할 수 있다.
+
+```shell
+# 디플로에먼트의 레플리카 값 변경
+kubectl scal --relicas=5 deployment/web-delpoy
+```
+
+<br>
+
