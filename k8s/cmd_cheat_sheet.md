@@ -742,3 +742,30 @@ kubectl delete node1
 # node1의 스케줄 재개
 kubectl uncordon node1
 ```
+
+<br>
+
+> ### **문제 판별**
+`-o yaml`은 매니페스트를 표시하는 것뿐 아니라 상태를 취득해서 표시할 때도 사용된다.
+
+`decribe po` 는 파드와 관련된 이벤트를 표시하기 때문에 유용하다.
+
+```shell
+# 실행중인 파드의 대화형 셀 실행
+kubectl exec 파드명 -it sh
+
+# 파드의 로그를 출력
+kubectl logs web-deploy-1234356789
+
+# 파드의 상세 정보 표시
+kubectl describe po web-deploy-123456789
+
+# 파드의 설정과 상태 표시1 - YAML 형식
+kubectl get po -o yaml web-deploy-123456789
+
+# 파드의 설정과 상태 표시2 - JSON 형식
+kubectl get po -o json web-deploy-123456789
+
+# 파드가 배포되지 않은 상황에서 노드의 리소스 상태 표시
+kubectl describe no node1
+```
