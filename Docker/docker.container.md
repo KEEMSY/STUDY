@@ -2,10 +2,13 @@
 
 ## 컨테이너 실행
 `docker run [OPTION] [IMAGE_NAME] [COMMAND]`
+
+예시: docker run -d --name test --network test-net -p 8080:80 -e MYSQL_USER=root -e MYSQL_PASSWORD=qwerty
 > option
 - `-i` : 컨테이너의 표준출력을 연결한다.
 - `-t` : tty를 확보한다. (콘솔을 통해 연결됨)
 - `--name` : 컨테이너 명 지정
+- `--network` : 접속하는 컨테이너 네트워크 명을 지정한다. 
 - `--hostname` : 컨테이너 내에서 사용할 호스트 명을 지정 한다.
 - `-p[호스트포트]:[컨테이너 포트]` : 호스트와 컨테이너의 포트를 매핑한다.
 - `-v [호스트 디렉토리]:[컨테이너디렉토리]` : nfs 처럼연결한다.
