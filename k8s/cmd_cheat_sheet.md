@@ -679,3 +679,21 @@ kubectl get deploy # 단축형
 # 디플로이먼트와 파드를 표시
 kubectl get deploy,po
 ```
+
+<br>
+
+> ### **오브젝트 변경**
+실행중인 오브젝트 사양을 수정한다. 변화가 적용될 때 서비스를 멈추지 않고 제어할 수 있다.
+
+```shell
+# 매니페스트에 의한 변경 적용
+kubectl apply -f new_my_manifest.yaml
+kubectl replace -f new_my_manifest.yaml
+
+# 실행중인 컨트롤러의 매니페스트 편집
+kubectl edit deploy/web-deploy
+KUBE_EDITOR='nano' kubectl edit deploy/web-deploy
+
+# 파드의 라벨 추가
+kubectl label pods web-deploy-1234566789 mark=1
+```
