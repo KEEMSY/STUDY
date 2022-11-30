@@ -98,12 +98,21 @@ k8s는 자동 배포, 스케일링 조정 및 로드밸런싱, 관리를 한곳�
     <br>
 
     > **디플로이먼트 생성하고 삭제하기(1개의 파드 생성)**
+    
+    ![kubctl get deploy](/img/kubectl-get-deploy.png)
+
     ```shell
     # 디플로이먼트 생성
     kubectl create deployment {파드이름} --image={계정이름}/{이미지이름}
-    
+
     # 생성된 디플로이먼트 확인
-    kubectl get pods
+    kubectl get deploy
+    - NAME: 디플로이먼트의 오브젝트 명
+    - DESIRED: 희망 파드의 개수, 디플로이먼트를 만들 때 설정한 파드 수
+    - CURRENT: 현재 실행 중인 파드의 개수
+    - UP-TO-DATE: 최근에 업데이트 된 파드의 개수. 즉, 컨트롤러에 의해 조정된 파드 수
+    - AVAILABLE: 사용 가ㅣ능한 파드 개수. 즉 정상적으로 가동되어 서비스 가능한 파드 수
+    - AGE: 오브젝트가 만들어진 후 경과 시간
 
     # 디플로이먼트 삭제
     kubectl delete deployment {파드이름}
