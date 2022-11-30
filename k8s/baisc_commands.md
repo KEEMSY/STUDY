@@ -1,7 +1,6 @@
 # Commands
 
 
-
 <br>
 
 ### **파드 생성하기**
@@ -9,9 +8,16 @@
 
 - docker hub의 작성된 image 를 통해 deployment object를 만든다.
 
+
+
 <br>
 
 `kubectl run POD_NAME --image=IMAEGE_NAME`
+- **작동 순서**
+    1. kubectl이 쿠버네티스에게 명령을 전달한다.
+    2. 노드에 이미지가 없으면 원격 리포지터리(Docker Hub)에서 다운로드 한다.
+    3. 노드의 containerd 가 컨테이너를 실행한다.
+    4. kubectl이 터미널에 메세지를 표시한다.
 
 <br>
 
