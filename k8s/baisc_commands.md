@@ -23,11 +23,13 @@
 
 > **create 와 run 의 차이**
 
-*run 으로 파드를 생성하면 단일 파드 1개만 생성되고 관리된다. 그리고 create deployment 로 파드를 생성하면 deployment 라는 관리 그룹 내에서 파드가 생성된다.*
+*`run` 으로 파드를 생성하면 단일 파드 1개만 생성되고 관리된다. 그리고 `create deployment` 로 파드를 생성하면 `deployment` 라는 관리 그룹 내에서 파드가 생성된다.*
 
-create 로 생성하려면 kubectl create 에 deployment 를 추가해서 실행해야한다. 
+`create` 로 생성하려면 `kubectl create` 에 `deployment` 를 추가해서 실행해야한다. 
 
-run으로 생성된 파드는 초코파이 1개로, create deployment 로 생성한 파드는 초코파이 상자에 들어있는 초코파이 1개로 묘사할 수 있다.
+`run`으로 생성된 파드는 초코파이 1개로, `create deployment` 로 생성한 파드는 초코파이 상자에 들어있는 초코파이 1개로 묘사할 수 있다.
+
+*`run` 커맨드는 서브 커맨드의 기능이 지나치게 방대해지는 것을 막기위해 파드 자체를 만들때만 사용하도록 한다.*
 
 <br><hr><br>
 
