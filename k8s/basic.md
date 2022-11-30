@@ -200,11 +200,11 @@ k8s는 자동 배포, 스케일링 조정 및 로드밸런싱, 관리를 한곳�
     # 오브젝트 종류 
     kind: Deployment 
     metadata:
-    name: {디플로이먼트의이름}
+    name: {디플로이먼트의이름} #네임스페이스 내에서 유일한 이름 값이여야함
     labels:
         app: {디플로이먼트의레이블}
 
-    spec:
+    spec: 
     # 몇개의 파드를 생성할지 결정
     replicas: {생성할파드의갯수} 
 
@@ -218,8 +218,9 @@ k8s는 자동 배포, 스케일링 조정 및 로드밸런싱, 관리를 한곳�
             app: {템플릿의레이블}
 
         # 템플릿에서 사용할 컨테이너 이미지 지정
+        # 파드의 사양을 기술한다.
         spec:
-        containers:
+        containers: # 컨테이너의 사양을 배열로 기술한다.
         - name: {컨테이너이름}}
             image: {계정이름}/{이미지이름}
     ```
@@ -229,6 +230,24 @@ k8s는 자동 배포, 스케일링 조정 및 로드밸런싱, 관리를 한곳�
     <br>
 
     *사용가능한 API 버전 확인하기: kubectl api-versions*
+    
+
+    [추가적인 파드의 사양 확인](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.14/#podspec-v1-core)
+
+- **컨테이너 설정(Container v1 core)**
+    - image: 이미지의 리포지터리명과 태그
+    - name: 컨테이너를 여러 개 기술할 경우 필수 항목
+    - livenessProbe: 컨테이너 애플리케이션이 정상적으로 동작 중인지 검사하는 프로브
+    - readinessProbe: 컨테이너 애플리케이션이 사용자의 요청을 받을 준비가 되었는지 검사하는 프로브
+    - ports: 외부로부터 요청을 전달받기 위한 포트 목록
+    - resources: CPU와 메모리 요구량과 상한치
+    - volumeMounts: 파드에 정의한 볼륨을 컨테이너의 파일 시스템에 마운트하는 설정. 복수 개 기술 가능
+    - command: 컨테이너 가동 시실행할 커맨드. args가 인자로 적용
+    - args: command의 실행 인자
+    - env: 컨테이너 내에 환경 변수를 설정
+
+
+        [추가적인 컨테이너 설정](https://kubernetes.io/docs/referrence/generated/kubernetes-api/v1.19/#container-v1-core)
 
     <br>
 
