@@ -41,3 +41,37 @@ containers:
 위 YMAL을 프로그램의 변수에 저장하면 [[첫 번째 요소], [두번째 요소]]와 같이 된다.
 
 `[{'image': 'nginx:latest', 'name': 'nginx'}, {'image': 'user/image:tag', 'name': 'cloner'}]`
+
+
+
+  ```yaml
+  # API 버전
+  # apps/v1 은 여러종류의 kind(오브젝트)를 가지고 있다.
+  apiVersion: apps/v1
+
+  # 오브젝트 종류 
+  kind: Deployment 
+  metadata:
+  name: {디플로이먼트의이름}
+  labels:
+      app: {디플로이먼트의레이블}
+
+  spec:
+  # 몇개의 파드를 생성할지 결정
+  replicas: {생성할파드의갯수} 
+
+  selector:
+      matchLabels:
+      app: {셀렉터의레이블}
+
+  template:
+      metadata:
+      labels:
+          app: {템플릿의레이블}
+
+      # 템플릿에서 사용할 컨테이너 이미지 지정
+      spec:
+      containers:
+      - name: {컨테이너이름}}
+          image: {계정이름}/{이미지이름}
+  ```
