@@ -70,7 +70,7 @@ k8s는 자동 배포, 스케일링 조정 및 로드밸런싱, 관리를 한곳�
 
     1. **파드(Pod)**
     
-        쿠버네티스에서 실행되는 최소 단위, 즉 웹 서비스를 구동하는데 필요한 최소 단위를 말한다. 
+        쿠버네티스에서 실행되는 최소 단위, 즉 웹 서비스를 구동하는데 필요한 최소 단위를 말한다.(서버역할 담당)
         
         독립적인 공간과 사용 가능한 IP(클러스터 네트워크상의 IP)를 가지고 있다. 파드의 IP 주소는 k8s 클러스터 외부에서 직접 접속할 수 없다. 
         
@@ -143,9 +143,15 @@ k8s는 자동 배포, 스케일링 조정 및 로드밸런싱, 관리를 한곳�
 
 - ### **디플로이먼트(Deployment)**
 
-    기본 오브젝트만으로 쿠버네티스를 사용할 수 있다. 하지만 한계가 존재하여 이를 좀 더 효율적으로 구현한 것이 디플로이먼트(deployment)이다.
+    ![servertype-pod-control](/img/servertype-pod-control.png)
 
-    쿠버네티스에서 **가장 많이 사용되는 오브젝트**이며, 디플로이먼트 오브젝트는 **파드에 기반**을 두고 있으며, **레플리카셋 오브젝트를 합쳐 놓은 형테**이다.
+    <br>
+
+    쿠버네티스에서 **가장 많이 사용되는 오브젝트**이며, 디플로이먼트 오브젝트는 **파드에 기반**을 두고 있으며, **레플리카셋 오브젝트를 합쳐 놓은 형테**(*주로 상태를 참조한다. 직접 레플리카셋 조작 하는 경우는 거의 없음.*)이다.
+
+    디플로이먼트의 주된 역할은 파드의 개수를 관리하는 것이다. 파드(서버)의 개수를 관리하는 것은 시스템의 처리 능력, 서비스를 중단하지 않는 가용성, 그리고 비용측면에서 매우 중요하다.
+
+    디플로이먼트는 요청한 개수만큼 파드를 가동하여, 장애 등의 이유로 파드의 개수가 줄어들면 새롭게 파드를 만들어 가동한다. 그리고 애플리케이션의 버전을 업그레이드 할 경우 새로운 버전의 파드로 조금씩 바꾸는 기능도 제공한다.
 
     <br>
 
@@ -155,10 +161,13 @@ k8s는 자동 배포, 스케일링 조정 및 로드밸런싱, 관리를 한곳�
 
     ```shell
     # 디플로이먼트 생성
-    kubectl create deployment {파드이름} --image={계정이름}/{이미지이름}
+    1) kubectl create deployment {파드이름} --image={계정이름}/{이미지이름}
+
+    2) kubectl apply -f <YAML_파일명>
 
     # 생성된 디플로이먼트 확인
     kubectl get deploy
+
     - NAME: 디플로이먼트의 오브젝트 명
     - DESIRED: 희망 파드의 개수, 디플로이먼트를 만들 때 설정한 파드 수
     - CURRENT: 현재 실행 중인 파드의 개수
@@ -168,6 +177,7 @@ k8s는 자동 배포, 스케일링 조정 및 로드밸런싱, 관리를 한곳�
 
     # 디플로이먼트 삭제
     kubectl delete deployment {파드이름}
+    kubectl delete -f <YAML_파일명>
     ```
 
     <br>
@@ -205,44 +215,60 @@ k8s는 자동 배포, 스케일링 조정 및 로드밸런싱, 관리를 한곳�
 
     ![파일구조](/img/filestructure.png)
 
+    <br>
+
     ```ymal
-    # API 버전
-    # apps/v1 은 여러종류의 kind(오브젝트)를 가지고 있다.
-    apiVersion: apps/v1
+    apiVersion: apps/v1 # apps/v1 은 여러종류의 kind(오브젝트)를 가지고 있다.
 
     # 오브젝트 종류 
     kind: Deployment 
-    metadata:
+    metadata: 
     name: {디플로이먼트의이름} #네임스페이스 내에서 유일한 이름 값이여야함
     labels:
         app: {디플로이먼트의레이블}
 
-    spec: 
-    # 몇개의 파드를 생성할지 결정
-    replicas: {생성할파드의갯수} 
+    spec: # 디플로이먼트의 사양 참조
+        replicas: {생성할파드의갯수} 
+        selector:
+            matchLabels: # 컨트롤러와 파드를 대응시키는 라벨
+            app: {셀렉터의레이블} # <- 파드에 해당 라벨이 있어야함
 
-    selector:
-        matchLabels:
-        app: {셀렉터의레이블}
+        template: # 파드 템플릿
+            metadata:
+            labels:
+                app: {템플릿의레이블} # 파드의 라벨로 컨트롤러의 matchLabels와 일치해야한다.
+            spec: # 파드 템플릿의 사양 참조
+                containers: # 컨테이너의 사양을 배열로 기술한다.
+                - name: {컨테이너이름}}
+                    image: {계정이름}/{이미지이름}
+    ```    
 
-    template:
-        metadata:
-        labels:
-            app: {템플릿의레이블}
+    - **디플로이먼트 API(Deployment v1 apps)**
+        - apiVersion: 오브젝트를 포함하는 API의 버전을 의미한다. 일반적으로 알파(alpha)와 베타(beta)버전은 안정적이라 보지않지만 그 만큼 풍부한 기능을 갖고 있다.
+        - metadata: name에 오브젝트 이름을 설정한다.
+        - kind: Deployment 를 설정한다.
+        - spec: 이곳에 디플로이먼트의 사양을 기술한다.
 
-        # 템플릿에서 사용할 컨테이너 이미지 지정
-        # 파드의 사양을 기술한다.
-        spec:
-        containers: # 컨테이너의 사양을 배열로 기술한다.
-        - name: {컨테이너이름}}
-            image: {계정이름}/{이미지이름}
-    ```
-    apiVersion은 오브젝트를 포함하는 API의 버전을 의미한다. 
-    일반적으로 알파(alpha)와 베타(beta)버전은 안정적이라 보지않지만 그 만큼 풍부한 기능을 갖고 있다.
+        *더 많은 내용은 https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.14/#deployment-v1-apps 를 참고한다.*
 
     <br>
 
+    - **디플로이먼트 사양(Deploymentspec v1 apps)** 
+        - replicas: 파드의 템플릿을 사용하여 가동할 파드의 개수를 지정한다. 디플로이먼트는 이 값을 유지하도록 동작한다.
+        - selector: 디플로이먼트 제어하의 레플리카셋과 파드를 대응 시키기 위해 matchLabels의 라벨이 사용된다.(이 라벨과 파드 템플릿의 레이블과 일치하지 않으면 kubectl create/apply 시 에러가 발생한다.)
+        - template: 파드 템플릿
+
+        *각 항목의 자세한 내용은 https://kubernetes.io/docs/reference/generated/kuberetes-api/v1.14/#deploymentspec-v1-apps 를 참고한다.*
+
+    <br>
+
+    - **파드 템플릿(PodTemplateSpec v1 core)**
+        - metadata: 이 라벨의 내용은 상기의 셀렉터가 지정하는 라벨과 일치해야한다.
+        - containers: 파드 컨테이너의 사양
+
     *사용가능한 API 버전 확인하기: kubectl api-versions*
+
+    <br>
     
 
     [추가적인 파드의 사양 확인](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.14/#podspec-v1-core)
