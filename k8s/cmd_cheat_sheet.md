@@ -753,6 +753,7 @@ kubectl uncordon node1
 ```shell
 # 실행중인 파드의 대화형 셀 실행
 kubectl exec 파드명 -it sh
+kubectl exec 파드명 -c 컨테이너명 -it sh # 파드에 컨테이너가 2개 이상일 경우
 
 # 파드의 로그를 출력
 kubectl logs web-deploy-1234356789
