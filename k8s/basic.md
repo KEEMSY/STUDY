@@ -261,6 +261,10 @@ k8s는 자동 배포, 스케일링 조정 및 로드밸런싱, 관리를 한곳�
         *각 항목의 자세한 내용은 https://kubernetes.io/docs/reference/generated/kuberetes-api/v1.14/#deploymentspec-v1-apps 를 참고한다.*
 
     <br>
+    
+    ![deploymentVsPod](/img/deploymentVsPod.png)
+
+    <br>
 
     - **파드 템플릿(PodTemplateSpec v1 core)**
         - metadata: 이 라벨의 내용은 상기의 셀렉터가 지정하는 라벨과 일치해야한다.
