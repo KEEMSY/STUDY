@@ -41,4 +41,3 @@ Iterator 패턴은 다양한 형태의 Aggregator의 구성 데이터를 참조�
     `Item` 클래스는 Aggregator(Container)의 구성 데이터에 대한 타입을 말한다.
 
 
-![diagram-explain.png](/img/diagram-explain.png)
