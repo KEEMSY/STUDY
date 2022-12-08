@@ -18,5 +18,5 @@ Singleton 패턴이 적용된 클래스의 객체는 다른 클래스들에서 �
 
 - ### **설명** 
 
-    `singleton` 포시를 통해 해당 객체(`King`)이 Singletone 패턴이 적용됬음을 인지한다.
+    `singleton` 표시를 통해 해당 객체(`King`)이 Singletone 패턴이 적용됬음을 인지한다.
 
