@@ -3,7 +3,7 @@
 ## 컨테이너 실행
 `docker run [OPTION] [IMAGE_NAME] [COMMAND]`
 
-예시: docker run -d --name test --network test-net -p 8080:80 -e MYSQL_USER=root -e MYSQL_PASSWORD=qwerty
+예시: `docker run -d --name test --network test-net -p 8080:80 -e MYSQL_USER=root -e MYSQL_PASSWORD=qwerty`
 > option
 - `-i` : 컨테이너의 표준출력을 연결한다.
 - `-t` : tty를 확보한다. (콘솔을 통해 연결됨)
