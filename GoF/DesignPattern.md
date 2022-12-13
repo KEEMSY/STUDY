@@ -56,7 +56,7 @@
     - Bridge
     - Composite
     - Decorator
-    - Facde
+    - Facade
     - FlyWeight
     - Proxy
 
