@@ -1,3 +1,5 @@
+import example_1.Display;
+
 public class ScreenDisplay implements Display {
     @Override
     public void print(String content) {
