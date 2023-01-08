@@ -1,4 +1,4 @@
-publci abstract class Animal {
+public abstract class Animal {
     protected String name;
 
     public Animal(String name) {
