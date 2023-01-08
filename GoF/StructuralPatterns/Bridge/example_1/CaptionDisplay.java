@@ -1,3 +1,6 @@
+package example_1;
+import Display;
+
 public class CaptionDisplay extends Display {
     @Override
     public void title(Draft draft) {

@@ -1,3 +1,6 @@
+import example_1.Display;
+import example_1.Draft;
+
 public class SimpleDisplay implements Display {
     @Override
     public void title(Draft draft) {

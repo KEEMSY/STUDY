@@ -1,3 +1,5 @@
+import example_1.Display;
+
 public class BufferDisplay implements Display {
     private ArrayList<String> buffer = new ArrayList<String>();
     private ScreenDisplay screen;

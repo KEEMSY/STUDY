@@ -1,3 +1,5 @@
+import example_1.Display;
+
 public class MainEntry {
     public static void main(String[] args) {
         // Display display = new ScreenDisplay();

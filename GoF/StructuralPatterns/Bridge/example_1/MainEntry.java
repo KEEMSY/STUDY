@@ -1,3 +1,7 @@
+import Display;
+import SimpleDisplay;
+
+package example_1;
 public class MainEntry {
     public static void main(String[] args) {
         var title = "타이틀 테스트";

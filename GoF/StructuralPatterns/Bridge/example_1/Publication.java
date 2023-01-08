@@ -1,3 +1,6 @@
+import Display;
+
+package example_1;
 public class Publication extends Draft {
     private String publisher;
     private int cost;

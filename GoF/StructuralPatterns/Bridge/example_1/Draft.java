@@ -1,3 +1,6 @@
+import Display;
+
+package example_1;
 public class Draft {
     private String title;
     private String author;
