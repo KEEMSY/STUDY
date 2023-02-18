@@ -104,7 +104,7 @@ BacklogItem의 애그리게잇을 예시로 설명한다.
 
 > ### **규칙 2: 작은 애그리게잇을 설계하라**
 
-![agrregateRole2Bad](/img/agrregateRole2Bad.png)
+![agrregateRule2Bad](/img/agrregateRule2Bad.png)
 
 규칙 2는 각 애그리게잇의 메모리 사용량과 트랜잭션 범위가 비교적 작아야 함을 강조한다. 위의 다이어그램은 작은 애그리게잇이 아니다.
 
@@ -114,7 +114,7 @@ BacklogItem의 애그리게잇을 예시로 설명한다.
 
 <br>
 
-![agrregateRole2Good](/img/agrregateRole2Good.png)
+![agrregateRule2Good](/img/agrregateRule2Good.png)
 
 Product 애그리게잇을 4개의 애그리게잇으로 분해하면 다음과 같은 장점이 존재한다.
 
@@ -130,10 +130,36 @@ Product 애그리게잇을 4개의 애그리게잇으로 분해하면 다음과 
 
 > ### **규칙 3: 오직 식별자로만 다른 애그리게잇을 참고하라**
 
-![agrregateRole3](/img/agrregateRole3.png)
+![agrregateRule3](/img/agrregateRule3.png)
 
 작은 분해된 애그리게잇은 식별자를 통해서만 다른 애그리게잇을 참조해야한다.
 
 - 이를 통해 동일한 트랜잭션 내에 다른 애그리게잇을 수정하지 않는 규칙이 잘 지켜질 수 있도록 해준다.
 - 오직 애그리게잇의 식별자를 통해서만 접근이 가능하고, 그 이외의 방법으로 다른 애그리게잇 내의 객체 래퍼런스를 얻어낼 수 있는 방법은 없다.
 - 애그리게잇을 관계형 데이터베이스, 문서 데이터베이스, 키/밸류 리포지토리 그리고 데이터 그리드/패브릭(grids/fabrics)와 같은 다른 형태의 저장 매커니즘으로 쉽게 저장할 수 있다.
+
+<br>
+
+> ### **규칙 4: 결과적으로 일관성을 사용해 다른 애그리게잇을 갱신하라**
+
+![agrregateRule4](/img/agrregateRule4.png)
+
+BacklogItem은 Sprint와 연계되어 수행되어, BacklogItem과 Sprint 모두 이것에 맞춰 설계가 이루어진다. 
+
+- BacklogItem은 관여된 SprintId를 알아야한다. 이는 BacklogItem의 상태가 Sprint의 SprintId를 갖도록 정의하는 하나의 트랜잭션 안에서 관리된다.
+
+<br>
+
+![aggregateMessaging](/img/aggregateMessaging.png)
+
+다음의 과정을 통해 Sprint 관점에서 새롭게 할당된 BacklogItem의 BacklogItemId로 연계되어 제대로 실행됨을 확신할 수 있다.
+
+- BacklogItem 애그리게잇의 트랜잭션의 일부로, BacklogItemCommited 라는 도메인 이벤트를 발행한다. BacklogItem 트랜잭션을 완료한 후의 상태는 BacklogItemCommited 도메인 이벤트를 통해 유지된다.
+- BacklogItemCommited 가 로컬 구독자에게 전달되면, 트랜잭션이 시작되고 Sprint의 상태는 할당된 BacklogItem의 BacklogItemId를 보유하도록 수정된다.
+- Sprint는 새로운 ÇommitedBacklogtItem 엔터티 안에 BacklogItemId를 보유한다.
+
+<br>
+
+BacklogItem 애그리게잇과 Sprint 애그리게잇의 경우, 발행자와 구독자가 같은 바운디드 컨텍스트 안에 있어, 굳이 이런 상황을 위해 메시징 미들웨어를 사용할 필요는 없지만, 다른 바운디드 컨텍스트에 이벤트를 발행시키기 위한 용도로 메시징을 사용한다면, 이 경우에도 사용하는 것이 좋다.
+
+<br><hr><hr>
