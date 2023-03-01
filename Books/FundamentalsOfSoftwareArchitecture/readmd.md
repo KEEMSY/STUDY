@@ -13,13 +13,21 @@
 
 <br>
 
-## **Part 1 기초**
+## Part 1 기초
 
 ### **CHAPTER 2 아키텍처 사고**
 
 ### **CHAPTER 3 모듈성**
 
 ### **CHAPTER 4 아키텍처 특성 정의**
+
+*[PR: [Add] Fundamentals Of Software Architecture ch.4 아키텍처 특성 정의](https://github.com/KEEMSY/STUDY/pull/91)*
+
+- 소프트웨어 시스템의 요구사항
+- 아키텍처 특성 (일부) 목록
+- 트레이트오프 및 나쁜 것 중에서 제일 나은 아키텍처
+
+<br>
 
 ### **CHAPTER 5 아키텍처 특성 식별**
 
@@ -31,9 +39,9 @@
 
 ### **CHAPTER 2 아키텍처 사고**
 
-<br>
+<br><hr>
 
-## **Part 2 아키텍처 스타일**
+## Part 2 아키텍처 스타일
 
 ### **CHAPTER 9 기초**
 
