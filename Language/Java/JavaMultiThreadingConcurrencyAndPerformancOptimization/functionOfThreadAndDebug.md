@@ -1,4 +1,5 @@
 ```java
+// Thread 생성하기 방법 1: Runnable 인터페이스를 구현하는 클래스의 객체를 스레드 객체 생성자에 전달하여 다른 스레드에서 실행되는 코드를 스케줄링 한다.
 public class Main1 {
     public static void main(String[] args) {
         Thread thread = new Thread(new Runnable() {
@@ -44,25 +45,24 @@ public class Main {
 
 > ### **Thread 클래스의 유용한 메서드**
 
-**현재 실행중인 스레드 출력**
+**`Thread.currentThread` [static]**
 
-- `Thread.currentThread` [static]
-
-<br>
-
-**현재 스레드를 주어진 만큼 멈추게 하기**
-
-*현재 스레드에 주어진 시간(밀리초(ms))이 지날 때까지 CPU를 사용하지 않는다.*
-
-*스케줄링은 운영체제에 의해 비동기적으로 발생한다.*
-
-- `sleep()` : 반복되는 명령문이 아닌, 운영체제에게 지시하는 것이다.
+- 현재 실행중인 스레드 출력한다.
 
 <br>
 
-**스레드 이름 설정**
+**`sleep()`**
 
-- `setName()`
+- 현재 스레드를 주어진 만큼 멈추게 한다.(이는 반복되는 명령문이 아닌, 운영체제에게 지시하는 것이다.)
+
+    *현재 스레드에 주어진 시간(밀리초(ms))이 지날 때까지 CPU를 사용하지 않는다.*
+
+    *스케줄링은 운영체제에 의해 비동기적으로 발생한다.*
+<br>
+
+**`setName()`**
+
+- 스레드 이름을 설정한다.
 
 <br>
 
@@ -77,15 +77,7 @@ public class Main {
 
 <br>
 
-**처음부터 전체 스레드에 해당되는 예외 핸들러 지정**
-
-스레드 내에서 발생한 예외가 어디에서도 캐치되지 않으면 핸들러가 호출되고, 캐치되지 않은 스레드와 예외를 출력한다.
-
-*현실적으로, 예외가 발생하면, 리소스 일부를 정리하거나 추가 데이터를 고르하여 문제가 발생한 이후 우리가 해결 할 수 있도록 한다.*
-
-- `setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler())`
-
-<br><hr>
+**`setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler())`**
 
 ```java
 public class Main2 {
@@ -115,3 +107,9 @@ public class Main2 {
 
 }
 ```
+
+- 처음부터 전체 스레드에 해당되는 예외 핸들러 지정한다.
+
+- 스레드 내에서 발생한 예외가 어디에서도 캐치되지 않으면 핸들러가 호출되고, 캐치되지 않은 스레드와 예외를 출력한다.
+
+    *현실적으로, 예외가 발생하면, 리소스 일부를 정리하거나 추가 데이터를 고르하여 문제가 발생한 이후 우리가 해결 할 수 있도록 한다.*
