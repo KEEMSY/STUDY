@@ -1,5 +1,8 @@
+**Thread 생성하기 방법 1** 
+
+*Runnable 인터페이스를 구현하는 클래스의 객체를 스레드 객체 생성자에 전달하여 다른 스레드에서 실행되는 코드를 스케줄링 한다.*
+
 ```java
-// Thread 생성하기 방법 1: Runnable 인터페이스를 구현하는 클래스의 객체를 스레드 객체 생성자에 전달하여 다른 스레드에서 실행되는 코드를 스케줄링 한다.
 public class Main1 {
     public static void main(String[] args) {
         Thread thread = new Thread(new Runnable() {
