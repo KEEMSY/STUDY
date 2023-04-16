@@ -11,7 +11,7 @@
 
 <br><hr><hr>
 
-## T**hread.interrupt()**
+## **Thread.interrupt()**
 
 각 스레드 객체는 `interrupt()` 메서드를 가진다.
 
