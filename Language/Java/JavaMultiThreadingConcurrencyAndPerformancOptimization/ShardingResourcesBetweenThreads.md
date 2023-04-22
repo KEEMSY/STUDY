@@ -95,3 +95,83 @@ Object referenceVar2 = new Object();
 - 여러 스레드가 사용하는 메서드는 원자적 작업이 아니라면(비원자적 연산), 매번 다른 시나리오가 나오게 된다.(실행 순서는 스케줄링을 하는 방법에 따라 달라지기 때문이다.)
 
 *Atomic Operation 이란, 기능적으로 분할할 수 없거나 분할되지 않도록 보증된 조작. 원자와 같이 분할할 수 없다는 것을 비유하여 이렇게 부른다.*
+
+<br>
+
+> ### **수량 증가 스레드(IncrementingThread), 수량 감소 스레드(DecrementingThread)**
+
+```java
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        InventoryCounter inventoryCounter = new InventoryCounter();
+        IncrementingThread incrementingThread = new IncrementingThread(inventoryCounter);
+        DecrementingThread decrementingThread = new DecrementingThread(inventoryCounter);
+
+        incrementingThread.start();
+        decrementingThread.start();
+
+        incrementingThread.join();
+        decrementingThread.join();
+
+        System.out.println("We currently have " + inventoryCounter.getItems() + " items");
+    }
+
+    public static class DecrementingThread extends Thread {
+
+        private InventoryCounter inventoryCounter;
+
+        public DecrementingThread(InventoryCounter inventoryCounter) {
+            this.inventoryCounter = inventoryCounter;
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < 10000; i++) {
+                inventoryCounter.decrement();
+            }
+        }
+    }
+
+    public static class IncrementingThread extends Thread {
+
+        private InventoryCounter inventoryCounter;
+
+        public IncrementingThread(InventoryCounter inventoryCounter) {
+            this.inventoryCounter = inventoryCounter;
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < 10000; i++) {
+                inventoryCounter.increment();
+            }
+        }
+    }
+
+    private static class InventoryCounter {
+        private int items = 0;
+
+        public void increment() {
+            items++;
+        }
+
+        public void decrement() {
+            items--;
+        }
+
+        public int getItems() {
+            return items;
+        }
+    }
+}
+```
+
+- `DecrementingThread`, `IncrementingThread` 를 **동시**에 **실행**된다면, 결과값은 `0` 이 아닌 다른 **엉뚱한 값**이 나온다.
+
+  - 이는 `InventoryCounter` 가 두 스레드로 전달되는 공유된 객체이기 때문이다.
+  - 두 스레드간 `increment`, `decrement` 메서드는 동시에 실행되어, **단일작업(`atomic operation`)** 이 아니다.
+    - 두 스레드 간 실행되는 순서는 스케줄링 방식에 따라 달라져, 매번 다른 시나리오(결과)가 나오게 되는 것이다.
+  - `item ++` 는 **3개의 작업** 이다.
+    1. `items` 의 `currentValue` 의 값을 가져온다.
+    2. `currentValue` 에 1을 더한 값인 `newValue` 를 만든다.
+    3. `newValue` 의 값을 `items` 변수에 저장한다.
