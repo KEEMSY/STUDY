@@ -257,6 +257,21 @@ public class Main {
 
 > ###  **Coarse-Grained Locking(성긴 락킹)**
 
+```java
+public class SharedClass {
+    private DatabaseConnection dbConnection;
+    private List<Task> tasksQueue;
+
+    public synchronized Item getItemFromDB() {
+        // ...
+    }
+
+    public synchronized void addTaskToQueue() {
+        // ...
+    }
+}
+```
+
 **단일 locking** 만 신경쓰며, 공유 리소스에 엑세스할 때마다 해당 locking만 사용하는 방법을 말한다.
 
 - `synchronized` 키워드를 선언하여 간단하게 사용할 수 있다.
@@ -267,15 +282,34 @@ public class Main {
 
 > ### **Fine-Grained Locking(세밀한 락킹)**
 
+```java
+public class SharedClass {
+    private DatabaseConnection dbConnection;
+    private List<Task> tasksQueue;
+
+    public  Item getItemFromDB() {
+        synchronized(dbConnection) {
+            // ...
+        }
+    }
+
+    public synchronized void addTaskToQueue() {
+        synchronized(tasksQueue) {
+            // ...
+        }
+    }
+}
+```
+
 공유 리소스를 **개별** 로 잠근다.
 
 - **모든 리소스** 에 **개별 락킹** 을 생성하는 것과 같다.
 - `병렬성`은 **키우**고 `경쟁`은 **낮** 출 수 있다.
-- 하지만 `데드락(dead lock)`이 발생할 수 있다.
+- 하지만 `교착상태(deadlock)`이 발생할 수 있다.
 
 <br>
 
-> ### **DeadLock(교착상태)**
+> ### **Deadlock(교착상태)**
 
 ```java
 Thread 1            Thread 2
@@ -316,7 +350,7 @@ unlock(A)           unlock(B)
 
     한 스레드가 A(공유 리소스)를 점유하고, 다른 스레드가 점유한 B(공유 리소스)를 기다리며, B를 소유한 다른 스레드는 A를 기다리는 상황을 말한다.
 
-    - 데드락 상태에 빠진 스레드에서 발견할 수 있다.
+    - 교착상태 상태에 빠진 스레드에서 발견할 수 있다.
 
 <br>
 
@@ -327,9 +361,9 @@ unlock(A)           unlock(B)
 - 가장 간단한 방법은 **순환 대기를 예방** 하는 것이다.
 
 - 동일한 순서로 공유 리소스를 잠그고, 모든 코드에 해당 순서를 유지한다.(락킹을 해제하는 순서는 중요하지 않다.)
-- 순환 종속성을 제거하여 데드락에 빠지지 않는다.
+- 순환 종속성을 제거하여 교착상태에 빠지지 않는다.
 
-- **DeadLock** 을 감시하는 장치를 사용한다.(`Watchdog`)
+- **Deadlock** 을 감시하는 장치를 사용한다.(`Watchdog`)
   - 주기적으로 특정 레지스터 상태를 체크한다.
     - 매 스레드나 매 명령마다 업데이트하고, 감시 장치가 업데이트를 감지하지 못하면 스레드가 응답하지 않는 것으로 판단하고 재가동한다.
   - `locking` 을 처리하기 전에 다른 스레드에 의해 `locking` 이 처리되었는지 확인하여 스레드가 중단되는 것을 막을 수 도 있다. (=`tryLock`)
