@@ -42,7 +42,6 @@ public void method() {
   - `synchronized` 는 공정성을 보장하지 않아 `ReentrantLock` 이 유용할 수 있다.
   - 하지만 `lock` 을 얻으려면 시간이 오래걸려 애플리케이션의 처리량이 줄어들 수 있다.
 
-
 <br>
 
 이는 과정이 복잡하여, `lock` 을 관리하기 위해 더 고도의 작업을 해야한다.
@@ -108,16 +107,67 @@ else {
 
 <br>
 
-**Ex. ReentrantLock.tryLock(): Financial Assets Dashboard**
-
-> **요구사항**
-
-- 알고싶은 가격은 뭐든지 실실간으로 볼 수 있다.
-- 스레드는 2개를 사용한다.
-  - UI Thread: 배경에 애니매이션을 만든다.
-    - 마우스 이벤트에 반응해서 투자 자산의 현재 가격을 보여준다.
-    - Background 스레드로부터 새로운 가격을 얻어 사용자에게 보여준다.
-  - Background Thread: 정기적으로 자산에 해당하는 최신 가격을 얻는다.
-- UI스레드와 Background 스레드 간 공유 리소스가 필요하다.
+>**Ex. ReentrantLock.tryLock(): Financial Assets Dashboard**
 
 *CodeFiles/23.reentrantlock-example 참고*
+
+<br>
+
+> ### **ReentrantReadWriteLock**
+
+`ReentrantReadWriteLock` 은 `Read lock` 과 `Write Lock` 을 합쳐서 하나의 `lock` 을 만든것을 의미한다.
+
+- `Read` 가 빈번하고, `Update(Write)` 를 하지 않는 경우, `Reader 스레드`와 `Write 스레드`간 **경쟁 상태를 막는 `lock` 이 필요하다.**
+
+- `Reader 스레드` 사이에는 **경쟁상태** 를 막을 필요가 **없다.**
+  - 이는 읽기 작업이 일반적으로 빠르기 때문이다.(임계영역을 짧게 유지하면 `lock` 이 경쟁상태를 막는 일도 거의 발생하지 않는다.)
+
+  - 하지만 **데이터 구조가 복잡**하면 읽기작업이 느려질 수 있다.
+    - 이런 경우 **공유자원을 읽는 것을 막으면 애플리케이션의 성능에 문제**가 발생항 수 있다.
+    - `ReentrantReadWriteLock` 이 필요한 순간이다.(`Read` 작업 끼리에 대한 제한을 완전히 없앤다.)
+
+<br>
+
+`ReentrantReadWriteLock` 은 `lock` 기능을 제공하지 않는, `쿼리메서드` 이다.
+
+```java
+// common
+ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
+Lock readLock = rwLock.readLock();
+Lock writeLock = rwLock.writeLock();
+```
+
+```java
+// writeLock
+writeLock.lock();
+try {
+    modifySharedResources();
+} finally {
+    writeLock.unlock();
+}
+```
+
+```java
+// readLock
+readLock.lock();
+try {
+    modifySharedResources();
+} finally {
+    readLock.unlock();
+}
+```
+
+- 내부 `lock`(`readLock`, `writeLock`) 이 두개 존재한다.
+  - `writeLock` 을 통해 **임계영역에 접근하는 것을 막고, 스레드는 그 영역에서 공유 리소스를 수정**한다.
+    - 오직 하나의 `Thread` 만이 `writeLock` 이 허용된다.
+  - `readLock` 을 통해 임계영역을 보호하고 작업이 완료되면 `lock` 을 해제하며, `Reader 스레드` 여러개가 `readLock` 이 보호하는 **임계 영역에 진입할 수 있다.**
+    - `Reader 스레드`를 몇개 보관하고 있는지 기록한다.
+  - `readLock` 과 `writeLock` 은 **서로 차단** 한다.
+    - `Thread` 하나가 `writeLock` 을 얻었다면, 다른 `Thread` 는 `readLock` 을 **얻을 수 없다**.
+    - **최소 하나 이상**의 `Thread` 가 `readLock` 을 얻었다면, 어떤 `Thread` 도 `writeLock` 을 얻을 수 없다.
+
+<br>
+
+> **ex.Inventory Database**
+
+*CodeFiles/25.read-write-lock-example 참고*
