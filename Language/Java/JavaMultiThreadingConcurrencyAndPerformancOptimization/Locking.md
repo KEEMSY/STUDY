@@ -52,3 +52,55 @@ public void method() {
 - `isHeldByCurrentThread()`: 현재 스레드에 `lock` 이 있으면 참을 반환한다.
 - `isLocked()`: 스레드에 `lock` 이 있는지 없는지 알려준다.
 
+<br>
+
+> **ReentrantLock.lockInterruptibly()**
+
+```java
+@Override
+public void run() {
+    while(true) {
+        try {
+            lockObject.lockInterruptibly(); // somethread.interrupt();
+            // ...
+        } catch(InterruptedException) {
+            cleanUpAndExit();
+        }
+    }
+}
+```
+
+다른 스레드에 이미 `lock` 객체가 있고 lock 메서드가 아닌 `lockInterruptibly` 메서드를 호출하여, 중단상태에서 벗어날 수 있다.
+
+- 감시 장치를 실행할 때 이 메서드를 사용하면 유용하다.
+  - 감시 장치로 교착상태 스레드를 검출하고 교착상태 스레드에 `Interrupt` 를 실행해 스레드를 복구한다.
+
+
+<br>
+
+> **ReentrantLock.tryLock()**
+
+```java
+if(lockObject.tryLock()) {
+    try {
+        useResource();
+    }
+    finally {
+        lockObject.unlock();
+    }
+}
+else {
+    // ...
+}
+```
+
+`tryLock` 메서드를 사용하면 `lock` 메서드처럼 `lock` 객체를 얻는다.
+
+- `lock` 객체가 있다면 `tryLock` 메서드는 `lock` 객체를 얻고 `true` 을 반환한다.
+- `lock` 객체가 없다면, 스레드를 차단하는 대신 `false` 를 반환하고 다음 명령으로 넘어간다.
+  - 일반적인 `lock` 메서드를 사용할 경우, `lock` 객체를 얻을 때 까지 스레드를 차단한다.
+  - 하지만 `tryLock` 메서드를 사용할경우, 메서드가 차단되지 않고, `else` 문에 있는 다른 코드를 실행한다.
+    - 이 후, `try` 블록으로 다시 돌아와 lock 객체를 얻는다.
+- `lock` 객체가 어떤 스레드에 있건 즉시 값을 반환한다.
+- `lock` 메서드로 스레드를 중단할 수 없다.
+  - 실시간 처리(거래용 시스템, 사용자 인터페이스 등)에 유용하다
