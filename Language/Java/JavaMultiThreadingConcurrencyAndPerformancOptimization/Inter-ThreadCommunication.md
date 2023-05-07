@@ -163,3 +163,124 @@ while(true) {
 
 - **소켓 채널** 로 작업한 웹 애플리케이션에서도 사용할 수 있다.
   - `TCP` 나 `UDP` 패킷을 사용한 소켓 채널이 대응하는 핸들러에 전달된다.
+
+<br><hr><hr>
+
+## **Inter-Thread communication**
+
+> **Thread.interrupt()**
+
+![Inter-thread-Thread.interrupt.png](/img/Inter-thread-Thread.interrupt.png)
+
+스레드 간 통신하는 방법에는 `Thread.interrupt()` 를 사용하여 **다른 스레드에 신호**를 보낸다.
+
+- 보낸 신호는 하나의 컨텍스트에만 사용되어 `Thread B` 에 **interrupt** 하라고 알려준다.
+
+<br>
+
+> **Thread.join()**
+
+![Inter-thread-Thread.join.png](/img/Inter-thread-Thread.join.png)
+
+`Thread A` 가 CPU를 포기하고, `Thread B` 가 **종료될 때까지 기다린다.**
+
+- `Thread A` 에서 `Thread B` 까지 `Thread.join()` 를 통해 **스레드 간 통신**이 이뤄진다.
+  - `Thread B` 가 **종료**될 때 `Thread A` 를 깨우려 **신호** 를 보낸다.
+
+<br>
+
+> **Semaphore**
+
+![Inter-thread-Semaphore.png](/img/Inter-thread-Semaphore.png)
+
+`Semaphore` 권한이 **종료** 되고 `Thread` 가 `Thread A` **정지**하는 권한을 얻으려고 시도할 때 **스레드간 통신을 초기화하는데 `Semaphore` 를 사용한다.**
+
+- `Thread B` 가 `Thread A` 를 깨우기 위해 `Semaphore` 를 `release` 한다.
+
+<br>
+
+  `Semaphore` 는 `조건 변수(condition variable)` 의 특별한 사례라고 이야기 할 수 있다. `Thread` 가 `Semaphore` 를 얻으려한다면, **사용 가능한 권한의 수가 0보다 많은 지 확인하는 것**과 같다.
+
+- 조건이 충족되지 않으면 `Thread A` 는 `sleep(대기)` 하고, `Thread B` 가 `semaphore` **상태를 변경** 할 때 까지 기다린다.
+- `Thread B` 가 `release()` 를 호출하면 `Thread A` 가 깨어나 사용 가능한 권한 **조건이 충족됬는지 확인**한다.
+- 조건이 충족됬다면, `Thread A` 는 다음 명령어를 계속 실행한다.
+
+<br>
+
+> **Condition Variable(조건변수)**
+
+![Inter-thread-ConditionVariable.png](/img/Inter-thread-ConditionVariable.png)
+
+`조건변수`는 스레드 간 통신의 **제네릭** 방법이다.
+
+- 연속적인 `Thread` 실행을 명시하기 위해 원하는 모든 **조건**을 사용하게한다.
+- `조건 변수`는 항상 `lock` 과 연관된다.
+- `await()` 를 통해 **스레드를 조건이 부합될 때까지 기다리게하고, `signal()`을 통해 스레드를 깨운다.**
+  
+  - `lock` 은 **조건확인**과 조건에 들어있는 **공유 변수의 수정이 원자적으로 실행되었는지 확인** 하는데 사용된다.
+
+<br>
+
+> **예시: 사용자 인터페이스 스레드와 인증 스레드 사이의 통신**
+
+  ```java
+  Lock lock = new ReentrantLock();
+  Condtion condition = lock.newCondition();
+  String username = null, password = null;
+
+  lock.lock();
+  try {
+    while(username == null || password == null) {
+      condition.await(); // 공유변수를 unlock 하고, 스레드를 기다리게 한다.
+    } 
+  }
+  finally {
+    lock.unlock();
+  }
+  doStuff(); // 로직 진행 사용자가 존재하는지, 암호가맞는지 확인
+  ```
+
+  ```java
+  // UI Thread
+  lock.lock();
+  try {
+    username = userTextbox.getText();
+    password = passwordTextbox.getText();
+    condition.signal(); // 인증 스레드를 깨운다.
+  } finally {
+    lock.unlock()
+  }
+  ```
+
+- `username` 과 `password` 의 **입력은, 공유 변수를 통해 이뤄진다.**
+- `try block` 에서 **조건이 충족되었는지 확인** 한다.
+  - 조건이 충족되지 않은 경우, `await()` 를 호출한다.
+    - `condition.await()`: 다른 스레드가 조건 신호를 보낼 때까지 스레드를 슬립시키고, 깨어나기까지 조건변수와  관련된 lock을 unlock 한다.
+    - 이를 통해 UI스레드가 lock을 얻을 수 있다.
+
+> **await 관련 메서드**
+
+```java
+void await() // unlock lock, signal 이 올 때까지 기다린다.
+long awaitNanos(long nanosTimeout) // 나노초로 일정 초과 시간 이상을 기다리지 않는다.
+boolean await(long time, TimeUnit unit) // 기다릴 수 있는 시간의 상한과 시간을 측정하려는 단위를 두 인수로 갖을 때까지 기다린다.
+boolean awaitUntil(Date deadline) // 특정 시간 또는 날짜가 되기를 기다린다.
+```
+
+> **Condition.signal()**
+
+```java
+void signal() // 현재 조건변수에서 기다리는 스레드는 깨운다.
+void signalAll() // 현재 조건 변수에서 기다리는 모든 스레드를 깨운다.
+```
+
+1. **`signal()`**
+
+- `조건 변수`에서 기다리는 `Thread` 가 하나 이상일 경우, 오직 하나만 깨어나고 나머지는 `sleep` 상태로 남는다.
+  - 깨어나는 `Thread` 는 `조건변수`와 연관된 `lock` 을 다시 **얻어야 한다.**
+  - `조건 변수`에 기다리는 `Thread` 가 없을 때에는 `signal` 이 가는 스레드도 없다.(*semaphore와 차이점*)
+
+2. **`signalAll()`**
+
+- `조건 변수` 에서 기다리는 `Thread` 의 수와 `Thread` **정보를 몰라도 된다**는 장점이 존재한다.
+- `signalAll` 와 같은 결과를 얻기 위해, `Semaphore` 에서는  현재 기다리는 `Thread` 만큼의 `Semaphore` 를 `release` 해야한다.
