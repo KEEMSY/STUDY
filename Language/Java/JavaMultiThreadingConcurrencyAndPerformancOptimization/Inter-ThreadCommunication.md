@@ -284,3 +284,34 @@ void signalAll() // 현재 조건 변수에서 기다리는 모든 스레드를 
 
 - `조건 변수` 에서 기다리는 `Thread` 의 수와 `Thread` **정보를 몰라도 된다**는 장점이 존재한다.
 - `signalAll` 와 같은 결과를 얻기 위해, `Semaphore` 에서는  현재 기다리는 `Thread` 만큼의 `Semaphore` 를 `release` 해야한다.
+
+
+<br><hr><hr>
+
+## **Signal Methods**
+
+```java
+public final void wait() throws InterruptedException 
+public final void notify()
+public final void notifyAll()
+```
+
+Java의 객체 클래스에는 wait, notify, notifyAll 메서드가 존재한다.
+
+- Java의 모든 클래스가 객체 클래스에서 상속하기에 어떤 유형의 객체에서도 해당 메서드들을 호출 할 수 있다.
+- 어떤 객체라도 조건 변수로 사용할 수 있다.
+  - synchronized 키워드를 사용하여 모든 객체를 lock 으로 사용할 수 있다.
+
+> **wait()**
+
+공유 객체에서 호출된 wait 메서드는 다른 스레드가 깨어날 때까지 현재 스레드를 기다리게 한다.
+
+- wait 상태에서 스레드는 CPU를 전혀 사용하지 않는다.
+- 깨우는 방법에는 2가지가 존재한다.
+  - notify(): 다른 스레드에서 해당 메서드를 호출하여, 현재 객체에서 대기하는 단일 스레드를 깨운다. 
+
+    *여러 스레드가 객체에서 대기하고 있다면, 그 중 하나가 임의로 선택된다.*
+
+  - notifyAll(): 객체의 모든 스레드를 깨우기 위해서 사용한다.
+
+깨우기 전(wait, notify, notifyAll 메서드를 호출하기 전)에는 객체를 동기화 해야한다.
