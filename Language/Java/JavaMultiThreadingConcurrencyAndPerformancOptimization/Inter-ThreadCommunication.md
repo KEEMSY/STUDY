@@ -285,7 +285,6 @@ void signalAll() // 현재 조건 변수에서 기다리는 모든 스레드를 
 - `조건 변수` 에서 기다리는 `Thread` 의 수와 `Thread` **정보를 몰라도 된다**는 장점이 존재한다.
 - `signalAll` 와 같은 결과를 얻기 위해, `Semaphore` 에서는  현재 기다리는 `Thread` 만큼의 `Semaphore` 를 `release` 해야한다.
 
-
 <br><hr><hr>
 
 ## **Signal Methods**
@@ -306,12 +305,121 @@ Java의 객체 클래스에는 wait, notify, notifyAll 메서드가 존재한다
 
 공유 객체에서 호출된 wait 메서드는 다른 스레드가 깨어날 때까지 현재 스레드를 기다리게 한다.
 
-- wait 상태에서 스레드는 CPU를 전혀 사용하지 않는다.
+- `wait` 상태에서 스레드는 CPU를 전혀 사용하지 않는다.
 - 깨우는 방법에는 2가지가 존재한다.
-  - notify(): 다른 스레드에서 해당 메서드를 호출하여, 현재 객체에서 대기하는 단일 스레드를 깨운다. 
+  - `notify()`: 다른 스레드에서 해당 메서드를 호출하여, 현재 객체에서 대기하는 단일 스레드를 깨운다.
 
     *여러 스레드가 객체에서 대기하고 있다면, 그 중 하나가 임의로 선택된다.*
 
-  - notifyAll(): 객체의 모든 스레드를 깨우기 위해서 사용한다.
+  - `notifyAll()`: 객체의 모든 스레드를 깨우기 위해서 사용한다.
 
-깨우기 전(wait, notify, notifyAll 메서드를 호출하기 전)에는 객체를 동기화 해야한다.
+깨우기 전(`wait`, `notify`, `notifyAll` 메서드를 호출하기 전)에는 객체를 `동기화` 해야한다.
+
+<br>
+
+> **Example - wait(), notify() and notifyAll()**
+
+```java
+// 여러 스레드가 클래스 객체를 공유하는 상황이며, 클래스는 작업의 완료 상태를 알려주는 변수를 포함하고 있다.
+
+// CASE 1
+
+public class MySharedClass {
+  private boolean isComplete = false;
+  public void waitUntilComplete() {
+    synchronized(this) {
+      while(isComplete == false) {
+        this.wait()
+      }
+    }
+  }
+  // ...
+
+  public void complete() {
+    synchronized(this) {
+      isComplete = true;
+      this.notify();
+    }
+  }
+}
+```
+
+```java
+// CASE 2
+
+public class MySharedClass {
+  private boolean isComplete = false;
+  public void synchronized waitUntilComplete() {
+    while(isComplete == false) {
+      this.wait()
+    }
+  }
+  
+  // ...
+
+  public void synchronized complete() {
+    isComplete = true;
+    this.notify();
+  }
+}
+
+```
+
+|Object Signalling|Condition Variable|
+|---|---|
+|`synchronized`(object) {|lock.`lock()`|
+|}|lock.`unlock()`|
+|object.`wait()`|condition.`await()`|
+|object.`notify()`|condition.`signal()`|
+|object.`notifyAll()`|condition.`signalAll()`|
+
+조건변수와 매우 비슷하지만, 현재 객체를 `lock` 와 `조건변수`를 통해 동시성을 구현하고 있다.
+
+- 어떤 객체라도 사용할 수 있지만, 현재 객체를 사용하면, 메서드 선언에 synchronized 키워드를 옮기고 암시적인 wait 메서드 앞의 키워드를 제거하여 코드를 정리할 수 있다.
+
+> **CountDownLatch**
+
+```java
+public class SimpleCountDownLatch {
+    private int count;
+ 
+    public SimpleCountDownLatch(int count) {
+        this.count = count;
+        if (count < 0) {
+            throw new IllegalArgumentException("count cannot be negative");
+        }
+    }
+ 
+    public void await() throws InterruptedException {
+        synchronized (this) {
+            while (count > 0) {
+                this.wait();
+            }
+        }
+    }
+ 
+    public void countDown() {
+        synchronized (this) {
+            if (count > 0) {
+                count--;
+                
+                if (count == 0) {
+                    this.notifyAll();
+                }
+            }
+        }
+    }
+
+    public int getCount() {
+        return this.count;
+    }
+}
+```
+
+- `countDown()`
+  - 각 latch의 count 를 감소시켜, count가 0에 도달하면 대기하고 있던 모든 스레드를 릴리스한다.
+  - 만약 현재 count가 이미 0이라면, 아무 일도 일어나지 않는다.
+
+- `await()`
+  - 현재 스레드를 latch의 count가 0으로 감소할 때까지 기다리게 한다.
+  - 만약 현재 count가 이미 0이라면, 해당 메서드가 바로 반환된다.
