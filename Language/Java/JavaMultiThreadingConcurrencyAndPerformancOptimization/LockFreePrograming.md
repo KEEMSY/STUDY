@@ -34,30 +34,79 @@ lock 이 필요한 핵심 이유는, 공유 자원에 대하여, 원자적 연�
 
  연산을 활용하여 단일 하드웨어 명령어로 실행될 수 있도록 보장한다.
 
- - 단일 하드웨어 명령어는 의미상 원자적이며, 스레드는 안전하다.
+- 단일 하드웨어 명령어는 의미상 원자적이며, 스레드는 안전하다.
 
  > **원자적 연산의 종류**
 
- - `long`/ `double` 을 제외한 모든 원시 유형(`primitive types`)
- - `Read`/`Assignment`
- - `volatile primitive types`
- - `java.util.concurrent.atomic` package
+- `long`/ `double` 을 제외한 모든 원시 유형(`primitive types`)
+- `Read`/`Assignment`
+- `volatile primitive types`
+- `java.util.concurrent.atomic` package
 
 > **AtomicX Classes**
 
-- AtomicBoolean
-- AtomicInteger
-- AtomicIntegerArray
-- AtomicIntegerFieldUpdater<T>
-- AtomicLong
-- AtomicLongArray
-- AtomicFieldUpdateer<T>
-- AtomicMarkableReference<V>
-- AtomicReference<V>
-- AtomicReferenceArray<E>
-- AtomicReferenceFieldUpdater<T,V>
-- AtomicStamperdReference<V>
-- DoubleAccumlator
-- DoubleAdder
-- LongAccumulator
-- LongAdder
+- `AtomicBoolean`
+- `AtomicInteger`
+- `AtomicIntegerArray`
+- `AtomicIntegerFieldUpdater<T>`
+- `AtomicLong`
+- `AtomicLongArray`
+- `AtomicFieldUpdateer<T>`
+- `AtomicMarkableReference<V>`
+- `AtomicReference<V>`
+- `AtomicReferenceArray<E>`
+- `AtomicReferenceFieldUpdater<T,V>`
+- `AtomicStamperdReference<V>`
+- `DoubleAccumlator`
+- `DoubleAdder`
+- `LongAccumulator`
+- `LongAdder`
+
+<br><hr>
+
+> ### AtomicInteger
+
+```java
+int initialValue = 0;
+AtomicInteger atomicInteger = new AtomicInteger(initialValue);
+
+// atomically increment the integer by one
+atomicInteger.incrementAndGet(); // return new value
+atomicInteger.getAndIncrement(); // return the previous value
+
+// atomically decrement the integer by one
+atomicInteger.decrementAndGet(); // return the new valuel
+atomicInteger.getAndDecrement(); // return the previous value
+
+int delta = 5;
+// atomically add any integer
+atomicInteger.addAndGet(delta); // return new value
+atomicInteger.getAndAdd(delta); // return the previous value
+```
+
+```java
+int initialValue = 0;
+AtomicInteger atomicInteger = new AtomicInteger(initialValue);
+
+atomicInteger.incrementAndGet();
+atomicInteger,addAndGet(-5) // Race Condition
+```
+
+원자적 정수는 정수 값으로, 실행할 수 있는 원자적 연산을 제공하는 클래스이다.
+
+- 원자적 정수는 계산이나 집합, 행렬 이벤트 등 수를 확인해야하는 작업을 lock 을 사용하지 않고 간단하게 병렬 수행을 가능하게 해준다.
+  - 원자적 연산은 비원자적 연산을 보호하기 위해 lock을 가진 일반 정수를 사용하는 연산과 동등하거나 더 나은 성능을 보인다.
+  - 하지만 싱글스레드 환경에서는 일반 정수사용보다 느려질 수 있기에 원자적 정수가 제공하는 연산이 중요하지 않은 경우, 정규 정수를 사용한다.
+- 원자적 연산의 장점은 lock 이나 synchronization(동기화)가 전혀 필요하지 않아, 경쟁상태 혹은 데이터 경쟁을 걱정하지 않아도 된다.
+- 하지만 atomic 메서드를 다른 연산과 함께 원자적으로 실행할 수 없다.
+  - 원자적 연산이지만 서로 분리되어 있기 때문이다.
+
+> **관련 메서드**
+
+- `incrementAndGet()`: 정수를 원자적으로 1 증가시키며, 새로운 값을 반환한다.
+- `getAndincrement()`: 정수를 원자적으로 1 증가시키며, 이전 값을 반환한다.
+- `decrementAndGet()`: 정수를 원자적으로 1 감소시키며, 새로운 값을 반환한다.
+- `getAndDecrement()`: 정수를 원자적으로 1 감소시키며, 이전 값을 반환한다.
+
+- `addAndGet()`: 원자적 정수 현재 값에 어떤 정수일지라도 더한 뒤, 새로운 값을 반환한다.
+- `getAndAdd()`: 원자적 정수 현재 값에 어떤 정수일지라도 더한 뒤, 이전 값을 반환한다.
