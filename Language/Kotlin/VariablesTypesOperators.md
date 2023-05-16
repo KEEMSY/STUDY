@@ -2,6 +2,8 @@
 
 ## **변수,Variables**
 
+> ### **Java**
+
 ```java
 package com.lannstark.lec01;
 
@@ -25,6 +27,10 @@ public class Lec01Main {
 
 - Java 에서 `long`(1) 과 `final long`(2) 의 차이는 해당 변수가 `가변` / `불변`(read-only)이냐에 따라 달려있다.
 - Java 에서는 `Type`을 반드시 명시해야한다.
+
+<br>
+
+> ### **Kotlin**
 
 ```kotlin
 fun main() {
@@ -62,3 +68,165 @@ fun main() {
   - 아예 다른 타입으로 간주됨을 주의한다.
 
 - 객체를 인스턴스화 할 때, `new` 를 붙이면 안된다.
+
+<br><hr>
+
+## **Kotlin 에서의 null 을 다루는 방법**
+
+> ### **Java**
+
+```java
+public class Lec02Main {
+
+  public static void main(String[] args) {
+
+  }
+
+  public boolean startsWithA1(String str) {
+    if (str == null) {
+      throw new IllegalArgumentException("null이 들어왔습니다");
+    }
+    return str.startsWith("A");
+  }
+
+
+  public Boolean startsWithA2(String str) {
+    if (str == null) {
+      return null;
+    }
+    return str.startsWith("A");
+  }
+
+
+  public boolean startsWithA3(String str) {
+    if (str == null) {
+      return false;
+    }
+    return str.startsWith("A");
+  }
+
+}
+```
+
+<br>
+
+> ### **Kotlin**
+
+```kotlin
+fun main() {
+    var str: String? = "ABC"
+    // str.length // 불가능
+    str?.length // 가능, safe call
+
+    val str1: String? = "ABC"
+    str?.length ?: 0 // elvis 연산자
+}
+
+fun startsWirthA1(str: String?): Boolean { // null 이 들어올 수 있음을 명시한다.
+    if(str == null) {
+        throw IllegalArgumentException("null 이 들어왔습니다.")
+    }
+    return str.stratsWith("A")
+}
+
+// startsWirthA1 을 kotlin 스럽게 바꾼다면?
+fun startsWirthA11(str: String?): Boolean { // null 이 들어올 수 있음을 명시한다.
+    return str?.startsWith("A")ㅋ
+      ?: throw IllegalArgumentException("null 이 들어왔습니다.")
+}
+
+
+fun startsWithA2(str: String?): Boolean? { // null 이 들어올 수 있고, 반환값에 null 이 가능함을 명시한다.
+    if(str == null) {
+        return null
+    }
+    return str.stratsWith("A")
+}
+
+// startsWirthA2 을 kotlin 스럽게 바꾼다면?
+fun startsWithA2(str: String?): Boolean? { // null 이 들어올 수 있고, 반환값에 null 이 가능함을 명시한다.
+    return str?.stratsWith("A")
+}
+
+
+fun startsWithA3(str: String?): Boolean { 
+    if(str == null) {
+        return false
+    }
+    return return str.stratsWith("A")
+}
+
+// startsWirthA3 을 kotlin 스럽게 바꾼다면?
+fun startsWithA3(str: String?): Boolean {
+    return return str?.stratsWith("A")?: false
+}
+
+fun startsWithA4(str: String): Boolean {
+    return str!!.startsWith("A")  // null일 수도 있지만, 어떠한 경우에도 null이 들어올 수 없다.
+}
+```
+
+코틀린에서는 `null` 이 가능한 타입을 완전히 다르게 취급하며, `null` 이 가능한 타입만을 위한 기능이 존재한다.
+
+- 한번 `null` 검사를 하면 `non-null` 임을 컴파일러가 알 수 있다.
+- `Safe Call`: `null` 이 아니면 실행하고, `null` 이 아니면 실행하지 않는다.(그대로 `null`이 된다.)
+- `Elvis Operator`: 앞의 연산결과가 `null` 이면 뒤의 값을 사용한다.
+
+<br>
+
+`nullable type` 이지만, 아무리 생각해도 `null` 이 될 수 없는 경우 `!!` 을 사용한다.
+
+- DB에 처음 넣을 때는 `null` 이지만, 한번 모종의 업데이트 이후에는 절대 `null` 이 될 수 없는 경우 등..
+- 아무리 그래도 혹시나 `null` 이 들어온다면 `NPE` 가 발생하기 때문에 정말 `null` 이 아닌것이 확실한 경우에만 `null` 아님 단언을 사용한다.
+
+<br>
+
+### **코틀린에서 자바 코드를 가져다 사용할 경우 해당 타입이 `null` 이 될 수 있는지 없는지 확인하는 방법**
+
+> ### **Java**
+
+```java
+package com.lannstark.lec02;
+
+import org.jetbrains.annotations.Nullable;
+
+public class Person {
+
+  private final String name;
+
+  public Person(String name) {
+    this.name = name;
+  }
+  
+  @Nullable  // 해당 주석이 없을 경우, 코틀린에서 사용할 경우, runtime 시 Exception 이 발생할 수 있다.
+  public String getName() {
+    return name;
+  }
+}
+```
+
+> ### **Kotlin**
+
+```kotlin
+fun main() {
+    val person = Person("공부하는 김성연")
+    startsWithA(person.name) // @Nullable 이 있을경우 에러발생
+}
+
+fun startsWithA(str: String): Boolean {
+    return  str,startsWith("A")
+}
+```
+
+코틀린에서 자바코드를 가져다 쓸 경우, `null` 에 대한 `Annotation` 정보를 이해한다.
+
+- `javx.annotation` 패키지
+- `android.support.annotation` 패키지
+- `org.jetbrains.annotation` 패키지
+
+`@Nullable` 이 없다면 코틀린에서는 해당 값이 `nullable` 인지 `non-nullable` 인지 알 수가 없다.
+
+- 플랫폼 타입은 코틀린이 `null` 관련 정보를 알수없는 타입을 말한다.
+- 이경우 `runtime` 시 `Exception` 이 발생할 수 있다.
+- 따라서 코틀린에서 자바 관련 코드를 사용할 때에는 , `null` 관련 코드를 좀 더 꼼꼼하게 작성하고 확인한다.(`null` 가능성을 확인한다.)
+  - 최초 코틀린에서 자바 라이브러리를 가져다 쓴 지점을 랩핑해서 단일 지점으로 만들어 추후 이슈가 발생할 경우 좀 더 쉽게 대응할 수 있도록 한다.
