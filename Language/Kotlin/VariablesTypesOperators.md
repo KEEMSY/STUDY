@@ -230,3 +230,204 @@ fun startsWithA(str: String): Boolean {
 - 이경우 `runtime` 시 `Exception` 이 발생할 수 있다.
 - 따라서 코틀린에서 자바 관련 코드를 사용할 때에는 , `null` 관련 코드를 좀 더 꼼꼼하게 작성하고 확인한다.(`null` 가능성을 확인한다.)
   - 최초 코틀린에서 자바 라이브러리를 가져다 쓴 지점을 랩핑해서 단일 지점으로 만들어 추후 이슈가 발생할 경우 좀 더 쉽게 대응할 수 있도록 한다.
+
+<br><hr>
+
+## **Kotlin 에서 Type 을 다루는 방법**
+
+```kotlin
+val number1 = 3 // Int
+val number2 = 3L // Long
+val number3 = 3.0f // Float
+val number4 = 3.0 // Double
+```
+
+기본타입은 다음과 같으며, 코틀린에서는 선언된 기본값을 보고 타입을 추론한다.
+
+- Byte
+- Short
+- Int
+- Long
+- Float
+- Double
+- 부호없는 정수들
+
+<br>
+
+```java
+innt number1 = 4;
+long number2 = number1; 
+
+System.out.println(number1 + number2); // 계산이 됨: int 타입의 값이 long 타입으로 암시적으로 변경 됨( 더 큰 타입으로 암시적 변경)
+```
+
+```kotlin
+val number1 = 4
+// val number2: Long = number1 // Type missmatch, 컴파일 에러 발생
+val number2: Long = number1.toLong()
+println(number1 + number2)
+
+val number3 = 3
+val number4 = 5
+val result = number3 / number4.toDouble() // 실수의 결과를 얻게 함
+
+val number5: Int? = 3 // null 일 수 있음
+val number6: Long = number5?.toLong() ? : 0L // null에 대한 처리
+
+```
+
+자바에서 기본 타입간의 변환은 암시적으로 이뤄질 수 있지만, 코틀린 기본 타입간의 변환은 명시적으로 이뤄져야 한다.
+
+- to변환타입() 을 사용한다.
+- 변수에 nullable 하다면 적절한 처리가 필요하다.
+
+<br>
+
+## **타입 캐스팅**
+
+```java
+public class Person {
+
+  private final String name;
+  private final int age;
+
+  public Person(String name, int age) {
+    this.name = name;
+    this.age = age;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public int getAge() {
+    return age;
+  }
+}
+```
+
+```kotlin
+/*
+ valus is Type
+ value 가 Type 이면 true
+ value 가 Type이 아니라면 false
+
+ value as Type
+ value 가 Type 이면 Type 으로 캐스팅
+ value 가 Type이 아니라면 예외 발생
+
+ value as? Type
+ value 가 Type 이면 Type 으로 캐스팅
+ value 가 null 이면 null
+ value 가 Type이 아니라면 null
+*/
+
+fun printAgeIfPerson(obj: Any) {
+    if(obj is Person) { // obj 가 Person 이라면
+    // if(obj !is Person)  // obj 가 Person 이 라면
+        val person = obj as Person // obs를 Person으로써 간주하여 person 변수에 할당한다. as Person은 생략 가능하다.
+        println(person.age)
+        // println(obj.age) 가능하며, 이를 스마트 캐스트 라고한다.
+    }
+}
+
+fun printAgeIfPerson(obj: Any) {
+     if(obj !is Person)  // obj 가 Person 이 라면
+        val person = obj as Person // obs를 Person으로써 간주하여 person 변수에 할당한다. as Person은 생략 가능하다.
+        println(person.age)
+    }
+}
+
+fun printAgeIfPerson(obj: Any?) {
+    if(obj is Person) { // obj 가 Person 이라면
+    // if(obj is Person)  // obj 가 Person 이 라면
+        val person = obj as? Person // obj 가 nulldl dkslfkaus Person 타입으로 변화 시키고, null 이라면 null 이 된다.
+        println(person?.age)
+    }
+}
+```
+
+- 자바의 instanceof는 코틀린의 is 에 해당한다.
+  - 부정은 !is 으로 사용한다.
+- 자바의 (Person)은 코틀린의 as Person obj 에 해당한다.
+
+<br><hr>
+
+## 코틀린의 특이한 타입
+
+> ### **Any**
+
+- 자바의 `Object` 역할을 한다.(모든 객체의 최상위 타입을 의미한다.)
+  - 모든 `Primitive Type`의 최상위 타입에도 해당한다.
+- `Any` 자체로는 `null` 을 포함할 수 없어 null 을 포함하고 싶다면 Any? 를 사용한다.
+- `Any` 에는 `equals` / `hashCode` / `toString` 이 존재한다.
+
+<br>
+
+> ### **Unit**
+
+- 자바의 `void` 와 동일한 역할을 한다.
+  - `void` 와는 다르게 `Unit` 은 그 자체로 타입인자로 사용 가능하다.
+- 함수형 프로그래밍에서 `Unit` 은 단 하나의 인스턴스만 갖는 타입을 의미한다.
+  - 코틀린의 `Unit` 은 실제 존재하는 타입이라는 것을 표현한다.
+
+<br>
+
+> ### **Nothing**
+
+```kotlin
+fun fail(message: String): Nothing {
+    throw IllegalArgumentException(message)
+}
+```
+
+- `Nothing` 은 함수가 정상적으로 끝나지 않았다는 사실을 표현하는 역할을 한다.
+- 무조건 예외를 반환하는 함수 / 무한 루프 함수 등에서 사용한다.
+
+<br><hr>
+
+## **String interpolation / String indexing**
+
+```kotlin
+val person Person("김성연", 100)
+val log1 = "사람의 이름은 ${person.name}이고 나이는 ${person.age}세 입니다."
+
+val name = "leo"
+val age = 100
+val log2 = "이름: $name 나이: $age"
+```
+
+- 코틀린에서는 `${변수}` 를 통해 값을 넣는다.
+  - 가독성 및 일괄변환, 정규식 활용 등을 위해 `${변수}` 를 사용하는 것이 좋다.
+- `$변수` 로도 사용 가능하다.
+
+<br>
+
+```kotlin
+val withoutIndent = 
+"""
+        ABC
+        123
+        456
+    """.trimIndent()
+
+println(withoutIndent)
+```
+
+- `"""(큰따옴표 세개)` 를 적절히 사용하여 문자열을 가공할 때 깔끔한 코딩이 가능하다.
+
+<br>
+
+```java
+// 자바에서의 문자열의 특정 문자 가져오기
+String str = "ABCDE";
+char ch = str.charAt(1);
+```
+
+```kotlin
+// 코틀린에서의 문자열의 특정 문자 가져오기
+val str = "ABCDE"
+val ch = str[1]
+```
+
+- 문자열에서 문자를 가져올 때 자바의 배열처럼 `[]` 를 사용한다.
