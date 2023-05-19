@@ -431,3 +431,123 @@ val ch = str[1]
 ```
 
 - 문자열에서 문자를 가져올 때 자바의 배열처럼 `[]` 를 사용한다.
+
+<br><hr>
+
+## **Operator**
+
+- **단항 연산자 / 산술 연산자 / 산술 대입 연산자 모두 Java 와 동일하다.**
+  - `++`, `--`
+  - `+`, `-`, `*`, `/`, `%`
+  - `+=`, `-=`, `/=`, `%=`
+- **비교 연산자 는 Java와 동일하나 객체간 비교 시 차이가 존재한다.**
+  - `>`, `<`, `>=`, `<=`
+  - `동등성(Equality)`: 두 객체의 값이 같은가?
+
+    ```kotlin
+    fun main() {
+        val money1 = JavaMoney(1_000L)
+        val money2 = money1
+        val money3 = JavaMoney(1_000L)
+
+        println(money1 === money2) // true
+        println(money1 === money3) // false
+        println(money1 == money3)  // true // equals 를 호출한다.
+    }
+    ```
+
+    - Java 에서는 `equals`값이 같은지 확인
+    - Kotlin 에서는 `==` 를 통해 확인한다.(equals 를 호출한다.)
+
+  - `동일성(Identity)`: 완전히 동일한 객체인가?(주소가 같은가?)
+    - Java 에서는 `==` 레퍼런스가 같은 지 확인
+    - Kotlin 에서는 `===` 를 통해 확인한다.
+  - Kotlin 에서는 객체를 비교할 때, 비교 연산자를 사용하면 자동으로 `compareTo` 를 호출한다.
+
+    ```java
+    public class main(String[] args) {
+        JavaMoney money1 = new JavaMoney(2_000L);
+        JavaMoney money2 = new JavaMoney(1_000L);
+
+        if (money1.compareTo(money2) > 0) {
+            System.out.println("Money1이 Money2 보다 금액이 큽니다.");
+        }
+    }
+    ```
+
+    ```java
+    public class JavaMoney implements Comparable<JavaMoney> {
+        private final long amount;
+
+        public JavaMoney(long amount) {
+            this.amount = amount;
+        }
+
+        @Override
+        public int compareTo(@NotNull JavaMoney o) {
+            return Long.compare(this.amount,o.amount);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            JavaMoney javaMoney = (JavaMoney) o;
+            return amount == javaMoney.amount;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(amount);
+        }
+    }
+
+    ```
+
+
+    ```kotlin
+    fun main() {
+        val money1 = JavaMoney(2_000L)
+        val money2 = JavaMoney(1_000L)
+
+        if (money1 > money2) { // compareTo 연산을 자동 호출한다.
+            println("Money1이 Money2 보다 금액이 큽니다.")
+        }
+        
+    }
+    ```
+
+- **논리 연산자(Java 와 완전히 동일하다.) / 코틀린에만 있는 특이한 연산자**
+  
+    ```kotlin
+    println(1 in numbers) // numbers 컬렉션 안에 1 이 포함되어 있다.
+
+    val str = "ABC"
+    println(str[2]) // C
+    ```
+
+  - `&&`, `||`, `!`
+  - Java 처럼 Lazy 연산을 수행한다.
+  - `in`, `!in`: 컬렉션이나 범위에 포함되어있다, 포함되어 있지 않다.
+  - `a..b`": a 부터 b 까지의 범위 객체를 생성한다.
+  - `a[i]`: a 에서 특정 Index i 로 값을 가져온다.
+  - `a[i] = b`: a의 특정 index i에 b를 넣는다.
+
+- **연산자 오버로딩**
+
+  ```kotlin
+    data class Money(
+        val amount: Long
+    ) {
+        operator fun plus(other: Money): Money {
+            return Money(this.amount + other.amount)
+        }
+    }
+
+    val money1 = Money(1_000L)
+    val money2 = Money(2_000L)
+    println(money1 + money2) // Money(amount=3000)
+    ```
+
+  - Kotlin 에서는 객체마다 연산자를 직접 정의할 수 있다.
+  - 연산자 오버로딩을 어떻게 다룰 수 있는지 공부해두면 좋다.
