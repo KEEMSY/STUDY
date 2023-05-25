@@ -308,7 +308,7 @@ public class Person {
 
 ```kotlin
 /*
- valus is Type
+ value is Type
  value 가 Type 이면 true
  value 가 Type이 아니라면 false
 
