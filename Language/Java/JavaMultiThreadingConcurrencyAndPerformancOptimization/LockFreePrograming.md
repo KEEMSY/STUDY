@@ -1,4 +1,4 @@
-# **Lock Free Programing**
+# **Lock Free Programming**
 
 멀티스레드 프로그래밍의 대부분은 Lock 을 통해 이뤄진다.
 

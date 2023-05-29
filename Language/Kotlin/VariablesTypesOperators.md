@@ -332,7 +332,7 @@ fun printAgeIfPerson(obj: Any) {
 }
 
 fun printAgeIfPerson(obj: Any) {
-     if(obj !is Person)  // obj 가 Person 이 라면
+     if(obj is Person) { // obj 가 Person 이 라면
         val person = obj as Person // obs를 Person으로써 간주하여 person 변수에 할당한다. as Person은 생략 가능하다.
         println(person.age)
     }
