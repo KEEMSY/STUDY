@@ -234,3 +234,115 @@ class Person(
 - `커스텀 getter` 와 `커스텀 setter` 를 만들 수 있다.
   - 커스텀 getter, setter 에서는 `무한루프` 를 막기 위해 `field` 키워드를 사용한다.
     - 이를 `backing field` 라고 한다.
+
+<br><hr><hr>
+
+## **추상 클래스(Abstrack Class)**
+
+```java
+public abstract class JavaAnimal {
+
+  protected final String species;
+  protected final int legCount;
+
+  public JavaAnimal(String species, int legCount) {
+    this.species = species;
+    this.legCount = legCount;
+  }
+
+  abstract public void move();
+
+  public String getSpecies() {
+    return species;
+  }
+
+  public int getLegCount() {
+    return legCount;
+  }
+}
+
+////////
+
+public class JavaCat extends JavaAnimal {
+
+  public JavaCat(String species) {
+    super(species, 4);
+  }
+
+  @Override
+  public void move() {
+    System.out.println("고양이가 사뿐 사뿐 걸어가~");
+  }
+
+}
+
+////////
+
+public final class JavaPenguin extends JavaAnimal {
+
+  private final int wingCount;
+
+  public JavaPenguin(String species) {
+    super(species, 2);
+    this.wingCount = 2;
+  }
+
+  @Override
+  public void move() {
+    System.out.println("펭귄이 움직입니다~ 꿱꿱");
+  }
+
+  @Override
+  public int getLegCount() {
+    return super.legCount + this.wingCount;
+  }
+
+}
+
+```
+
+```kotlin
+abstract class Animal(
+  protected val species: String,
+  protected open val legCount Int, // 프로퍼티 override 를 위한 open 키워드 사용
+) {
+  abstract fun move()
+}
+
+///////
+
+class Cat (
+  species: String
+) : Animal(species, 4) {
+  
+  override fun move() {
+    println("고양이가 사뿐 사뿐 걸어가~")
+  }
+}
+
+/////////
+
+class Penguin(
+  species: String
+) : Animal(species, 2) {
+  private val wingCount: Int = 2
+
+  override fun move() {
+    println("펭귄이 움직인다~ 꽥꽥")
+  }
+
+  override val legCount: Int
+    get() = super.legCount + this.wingCoung
+
+}
+
+```
+
+- 코틀린에서는 extends 키워드를 사용하지 않고 `:` 를 사용한다.
+- 코틀린에서 상속받을 때, 상위클래스의 생성자를 바로 호출해야한다.
+- override 어노테이션이 아닌, override 키워드를 필수적으로 붙여주어야 한다.
+- 프로퍼티를 override 할 때 무조건 open 을 붙여주어야 한다.(추상 프로퍼티일 경우 그냥 가능)
+  - 추상클래스에서 자동으로 만들어진 getter 를 override 하기 위해서는 커스텀 getter를 사용해야한다.
+- 상위 클래스에 접근하는 키워드는 `super` 이다.
+- 자바와 마찬가지로 코틀린에서는 추상클래스를 인스턴스화 할 수 없다.
+
