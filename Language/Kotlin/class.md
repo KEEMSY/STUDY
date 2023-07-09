@@ -346,3 +346,106 @@ class Penguin(
 - 상위 클래스에 접근하는 키워드는 `super` 이다.
 - 자바와 마찬가지로 코틀린에서는 추상클래스를 인스턴스화 할 수 없다.
 
+<br><hr>
+
+## **인터페이스(Interface)**
+
+*펭귄에 인터페이스를 구현한다.*
+
+```java
+public final class JavaPenguin extends JavaAnimal implements JavaSwimable, JavaFlyable {
+
+  private final int wingCount;
+
+  public JavaPenguin(String species) {
+    super(species, 2);
+    this.wingCount = 2;
+  }
+
+  @Override
+  public void move() {
+    System.out.println("펭귄이 움직입니다~ 꿱꿱");
+  }
+
+  @Override
+  public int getLegCount() {
+    return super.legCount + this.wingCount;
+  }
+
+  @Override
+  public void act() {
+    JavaSwimable.super.act();
+    JavaFlyable.super.act();
+  }
+
+}
+
+////////
+
+public interface JavaSwimable {
+
+  default void act() { // JDK8 부터 default 메소드를 인터페이스에 넣을 수 있다.
+    System.out.println("어푸 어푸");
+  }
+
+}
+
+//////
+
+public interface JavaFlyable {
+
+  default void act() {
+    System.out.println("파닥 파닥");
+  }
+
+}
+```
+
+```kotlin
+interface Swimable {
+  
+  fun act() {
+    println("어푸 어푸")
+  }
+
+}
+
+//////
+
+interface Flyable {
+
+  fun act() { // default 를 작성하지 않아도 default 함수를 작성할 수 있다.
+    println("파닥파닥")
+  }
+
+}
+
+///////
+
+class Penguin(
+  species: String
+) : Animal(species, 2), Swimable, Flyable {
+  private val wingCount: Int = 2
+
+  override fun move() {
+    println("펭귄이 움직인다~ 꽥꽥")
+  }
+
+  override val legCount: Int
+    get() = super.legCount + this.wingCoung
+
+  override fun act() {
+      super<Swimable>.act()
+      super<Flyable>.act()
+  }
+}
+
+```
+
+- default 키워드 없이 메소드 구현이 가능하다.
+- 코틀린에서도 자바와 동일하게 추상메서드를 만들 수 있다.
+- 인터페이스 구현 또한 `:` 를 사용한다.
+- 중복되는 인터페이스를 특정할 때, `super<타입>.함수` 를 사용한다.
+- 자바와 마찬가지로 코틀린 또한 인터페이스를 인스턴스화 할 수 없다.
+- 코틀린에서는 backing field 가 없는 프로퍼티를 interface 에 만들 수 있다.
+
