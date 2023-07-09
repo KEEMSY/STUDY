@@ -97,7 +97,7 @@ while (i <= 3) {
 // Kotlin
 
 var i = 1;
-while (i <= 3) {
+while (i <= 3) {    
     println(i)
     i++
 }
