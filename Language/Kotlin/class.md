@@ -98,7 +98,7 @@ class Person(
       return this.age >= 20
     }
 
-// name 을 get 할때 무조건 대문자로 바꿀 경우
+// 커스텀 getter: name 을 get 할때 무조건 대문자로 바꿀 경우
 class Person(
     name: String = "keemsy", // 커스텀 getter 를 사용할 것이기 때문에 기존의 val 을 제거한다.
     var age: Int = 1,
@@ -234,7 +234,7 @@ class Person(
   - 커스텀 getter, setter 에서는 `무한루프` 를 막기 위해 `field` 키워드를 사용한다.
     - 이를 `backing field` 라고 한다.
 
-<br><hr><hr>
+<br><hr>
 
 ## **추상 클래스(Abstrack Class)**
 
@@ -308,7 +308,7 @@ abstract class Animal(
   abstract fun move()
 }
 
-///////
+////////
 
 class Cat (
   species: String
@@ -319,7 +319,7 @@ class Cat (
   }
 }
 
-/////////
+////////
 
 class Penguin(
   species: String
@@ -337,10 +337,10 @@ class Penguin(
 
 ```
 
-- 코틀린에서는 extends 키워드를 사용하지 않고 `:` 를 사용한다.
+- 코틀린에서는 `extends` 키워드를 사용하지 않고 `:` 를 사용한다.
 - 코틀린에서 상속받을 때, 상위클래스의 생성자를 바로 호출해야한다.
-- override 어노테이션이 아닌, override 키워드를 필수적으로 붙여주어야 한다.
-- 프로퍼티를 override 할 때 무조건 open 을 붙여주어야 한다.(추상 프로퍼티일 경우 그냥 가능)
+- `override 어노테이션` 이 아닌, `override 키워드` 를 필수적으로 붙여주어야 한다.
+- 프로퍼티를 override 할 때 무조건 `open` 을 붙여주어야 한다.(추상 프로퍼티일 경우 그냥 가능)
   - 추상클래스에서 자동으로 만들어진 getter 를 override 하기 위해서는 커스텀 getter를 사용해야한다.
 - 상위 클래스에 접근하는 키워드는 `super` 이다.
 - 자바와 마찬가지로 코틀린에서는 추상클래스를 인스턴스화 할 수 없다.
@@ -409,7 +409,7 @@ interface Swimable {
 
 }
 
-//////
+////////
 
 interface Flyable {
 
@@ -419,7 +419,7 @@ interface Flyable {
 
 }
 
-///////
+////////
 
 class Penguin(
   species: String
@@ -465,7 +465,7 @@ public class JavaBase {
 
 }
 
-/////////
+////////
 
 public class JavaDerived extends JavaBase {
 
@@ -513,7 +513,7 @@ fun main() {
 
 ```
 
-- 상위 클래스의 Constructor 와 init 블록에서는 하위 클래스의 하위클래스에서 override 하는 프로퍼티(field)에 접근하면 안된다.(final이 아닌 프로퍼티에 접근하면 안된다.)
+- 상위 클래스의 `Constructor` 와 `init` 블록에서는 하위 클래스의 하위클래스에서 override 하는 프로퍼티(field)에 접근하면 안된다.(final이 아닌 프로퍼티에 접근하면 안된다.)
   - 상위 클래스를 설계할 때 생성자 또는 초기화 블록에 사용되는 프로퍼티에는 open 을 피해야 한다.
 
 <br><hr>
