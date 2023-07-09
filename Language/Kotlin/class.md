@@ -449,3 +449,71 @@ class Penguin(
 - 자바와 마찬가지로 코틀린 또한 인터페이스를 인스턴스화 할 수 없다.
 - 코틀린에서는 backing field 가 없는 프로퍼티를 interface 에 만들 수 있다.
 
+<br><hr>
+
+## **클래스를 상속할 때 주의할 점**
+
+```java
+public class JavaBase {
+
+  public JavaBase() {
+    System.out.println(getMember());
+  }
+
+  public int getMember() {
+    return 1;
+  }
+
+}
+
+/////////
+
+public class JavaDerived extends JavaBase {
+
+  public JavaDerived() {
+    super();
+  }
+
+  @Override
+  public int getMember() {
+    return 10;
+  }
+
+}
+```
+
+```kotlin
+open class Base (
+  open val number: Int = 100
+) {
+  init {
+    println("Base Class")
+    println(number)
+  }
+}
+
+////////
+
+class Derived(
+  override val number: Int
+) : Base(number) {
+  init {
+    println("Derived Class")
+  }
+}
+
+//////
+
+fun main() {
+  Derived(300)
+}
+// output
+// Base Class
+// 0
+// Derived Class
+
+```
+
+- 상위 클래스의 Constructor 와 init 블록에서는 하위 클래스의 하위클래스에서 override 하는 프로퍼티(field)에 접근하면 안된다.(final이 아닌 프로퍼티에 접근하면 안된다.)
+    - 상위 클래스를 설계할 때 생성자 또는 초기화 블록에 사용되는 프로퍼티에는 open 을 피해야 한다.
+
