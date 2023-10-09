@@ -223,3 +223,9 @@ public class UserRepo {
 이메일을 확인하기 위해 데이터베이스에 접근했다가 다시 사용자 정보를 확인하기 위해 데이터 베이스에 접근할 필요가 없다.
 
 - 이메일 확인 논리를 `UserRepo` 클래스에서 `UserService` 클래스 로 옮긴다.
+
+<br><hr>
+
+## 함께 고민하면 좋을 이슈
+
+- [코드 재사용성을 높이는 방법](https://github.com/KEEMSY/STUDY/blob/main/Architecture/CodeDesign/CodeReusability.md)
