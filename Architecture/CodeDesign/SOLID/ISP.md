@@ -30,7 +30,7 @@ public class userServiceImpl implements UserService {
 }
 ```
 
-- 서비스 사용자 시스템은 등록, 로그인, 사용자 ㅈ어보 획득과 같은 사용자 관련 API 집합을 제공한다.
+- 서비스 사용자 시스템은 등록, 로그인, 사용자 정보 획득과 같은 사용자 관련 API 집합을 제공한다.
 
 <br>
 
