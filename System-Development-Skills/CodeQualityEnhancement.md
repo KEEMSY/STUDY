@@ -83,3 +83,75 @@ public class IdGenerator {
 - `generate()` 메서드는 `공유변수`를 포함하지 않아, `Thread Safe` 이다.
 - `randomAscii` 의 범위는 0부터 122 이지만, 실제로 사용하는 값은 0~9, a~z, A~Z 의 세 구간이기 때문에, 문자열 생성 `알고리즘을 최적화` 할 필요가 있다.
 - `generate()` 함수의 `while 루프`에서 사용되는 if 문 코드는 비슷하며, 구현이 복잡하여, `단순화` 할 필요가 있다.
+
+
+<br><hr>
+
+## 가독성 향상을 위한 리팩터링
+
+예시 코드의 `가독성`과 관련한 문제와 이에 대한 개선안을 이야기한다면 다음과 같다.
+
+- `hostName`  변수는 두 가지 다른 용도로 사용되고 있다. 이를 중복하여 사용하지 않도록 개선한다.
+- 코드의 복잡도를 높이는 로직을 `헬퍼 메서드`로 추출한다.
+	- `hostName 을 얻기위한 코드`를 추출한다.(`getLastFieldOfHostName()`)
+	- `임의 문자열 생성 코드`를 추출한다.(`generateRandomAlphanumeric()`)
+- 코드에 57, 90, 97, 122 와 같은 `매직 넘버`를 제거한다.
+- `generate()` 함수에서의 `if 문의 논리 반복`을 줄이고 `구현을 단순화`한다.
+- `IdGenerator` 클래스는 구현체이므로, 이름을 바꾼 뒤, `인터페이스`를 `추상화`한다.
+
+<br>
+
+> 가독성 리팩터링 예시
+
+```java
+// 인터페이스 정의
+public interface IdGenerator {
+	String generate();
+}
+
+public class LogTraceIdGenerator implements IdGenerator {
+	private static fianl Logger logger = LoggerFactory.getLogger(IdGenerator.class);
+
+	@Override
+	public String generate() {
+		String substrOfHostName = getgetLastFieldOfHostName();
+		long currentTimeMills = System.currentTimeMills();
+		String randomString = generateRandomAlphanumeric();
+		String id = String.format("%s-%d-$s",
+			substrOfHostName, currentTimeMills, randomString);
+		return id;
+	}
+	// 헬퍼 메서드 추가1
+	private String getgetLastFieldOfHostName() {
+		String substrOfHostName = null;
+		try {
+			String hostName = InetAddress.getLocalHost().getHostName();
+			String[] tokens = hostName.split("\\.");
+			substrOfHostName = tokens[tokens.length - 1];
+			return substrOfHostName;
+		} catch (UnknownHostException e) {
+			logger.warn("Failed to get the host name.", e);
+		}
+		return substrOfHostName;
+	}
+
+	// 헬퍼 메서드 추가2
+	private String generateRandomAlphanumeric(int length) {
+		char[] randomChars = new char[length];
+		int count = 0;
+		Random random = new Random();
+		while (count < 0) {
+			int maxAscii = 'z';
+			int randomAscii = random.nextInt(maxAscii);
+			boolean isDigit = randomAscii >= '0' && randomAscii <= '9';
+			boolean isUppercase = randomAscii >= 'A' && randomAscii <= 'Z';
+			boolean isLowercase = randomAscii >= 'a' && randomAscii <= 'z';
+			if (isDigit || isUppercase || isLowercase) {
+				randomChars[count] = (char) (randomAscii);
+				++count;
+			}
+		} 
+		return new String(randomChars)
+	}
+}
+```
