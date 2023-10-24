@@ -155,3 +155,82 @@ public class LogTraceIdGenerator implements IdGenerator {
 	}
 }
 ```
+
+<br><hr>
+
+## 코드 테스트 용이성 향상을 위한 리팩터링
+
+**최초 Id 생성기 예제 코드**는 `테스트 용이성` 측면에서 두가지 문제점이 있다.
+
+1. `generate()` 함수는 `정적 함수(staic)`로 정의되어있다.
+2. `generate()` 함수의 코드 구현은 호스트 이름과 같은 실행 환경, 시간 함수, 임의 문자열 생성 알고리즘에 따라 달라진다.
+
+<br>
+
+하지만 첫번째 문제는 가독성 리팩터링(이하 첫번째 리팩터링)을 통해 해결된 상태이다. 따라서 첫번째 리팩터링을 기준으로 두번째 문제를 해결한다.
+
+- `getgetLastFieldOfHostName()` 함수에서 복잡한 코드로 구현된 문자열 추출 코드를 분리하여, `getLastSubstrSplitedByDot()` 함수로 정의한다. 분리된 `getgetLastFieldOfHostName()` 함수는 간단하므로 단위테스트를 작성하지 않으며, `getLastSubstrSplitedByDot()` 함수를 테스트 한다.
+- `private` 함수는 객체를 통해 호출할 수 없기 때문에 테스트 용이성이 떨어진다. 따라서, `generateRandomAlphanumeric()` 와 `getLastSubstrSplittedByDot()` 함수의 접근 권한을 `private` 에서 `protected` 로 변경하고, `@VisibleForeTesting` 어노테이션을 사용한다.
+
+*`@VisibleForeTesting` 은 `Google Guava` 에서 사용되는 `어노테이션` 으로 실질적인 효과를 전혀 갖지 않고, `식별자` 로서의 역할만 담당 한다.*
+
+<br>
+
+> 테스트 용이성 향상을 위한 리팩터링 예시
+
+```java
+public class LogTraceIdGenerator implements IdGenerator {
+	private static fianl Logger logger = LoggerFactory.getLogger(IdGenerator.class);
+
+	@Override
+	public String generate() {
+		String substrOfHostName = getgetLastFieldOfHostName();
+		long currentTimeMills = System.currentTimeMills();
+		String randomString = generateRandomAlphanumeric();
+		String id = String.format("%s-%d-$s",
+			substrOfHostName, currentTimeMills, randomString);
+		return id;
+	}
+
+	private String getgetLastFieldOfHostName() {
+		String substrOfHostName = null;
+		try {
+			String hostName = InetAddress.getLocalHost().getHostName();
+			substrOfHostName = getLastSubstrSplittedByDot(hostName);
+		} catch (UnknownHostException e) {
+			logger.warn("Failed to get the host name.", e);
+		}
+		return substrOfHostName;
+	}
+
+	// 헬퍼 메서드 추가, protected 접근자 설정, @VisibleForeTesting 어노테이션 추가
+	@VisibleForeTesting
+	protected String getLastSubstrSplittedByDot(String hostName) {
+		String[] tokens = hostName.split("\\.");
+		String substrOfHostName = tokens[tokens.length -1];
+		return substrOfHostName
+	}
+
+	// protected 접근자 설정, @VisibleForeTesting 어노테이션 추가
+	@VisibleForeTesting
+	protected String generateRandomAlphanumeric(int length) {
+		char[] randomChars = new char[length];
+		int count = 0;
+		Random random = new Random();
+		while (count < 0) {
+			int maxAscii = 'z';
+			int randomAscii = random.nextInt(maxAscii);
+			boolean isDigit = randomAscii >= '0' && randomAscii <= '9';
+			boolean isUppercase = randomAscii >= 'A' && randomAscii <= 'Z';
+			boolean isLowercase = randomAscii >= 'a' && randomAscii <= 'z';
+			if (isDigit || isUppercase || isLowercase) {
+				randomChars[count] = (char) (randomAscii);
+				++count;
+			}
+		} 
+		return new String(randomChars)
+	}
+}
+```
+
+- 로그를 출력하는 `Logger` 클래스의 경우 `static final` 로 정의되어 클래스 내부에 생성되지만, **데이터를 읽어와 변화시키지 않으며, 비즈니스 논리에 얽혀 있지 않기 때문** 에 코드의 정확성에 영향을 미치지 않으므로 `Mock` 또는 `의존성 주입`이 **필요하지 않다**.
