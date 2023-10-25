@@ -234,3 +234,59 @@ public class LogTraceIdGenerator implements IdGenerator {
 ```
 
 - 로그를 출력하는 `Logger` 클래스의 경우 `static final` 로 정의되어 클래스 내부에 생성되지만, **데이터를 읽어와 변화시키지 않으며, 비즈니스 논리에 얽혀 있지 않기 때문** 에 코드의 정확성에 영향을 미치지 않으므로 `Mock` 또는 `의존성 주입`이 **필요하지 않다**.
+
+<br><hr>
+
+## 예외 처리를 위한 리팩터링
+
+함수의 실행 결과는 두 가지 범주로 나눌 수 있다.
+
+- `예상된 결과` 로서 정상 조건에서 함수가 출력하는 결과
+- `예기치 않은 결과` 로서 정상적이지 않는 조건 또는 오류 상황에서 출력하는 결과
+
+<br>
+
+이에 따라 반환 값 을 고려할 때, 정상적인 상황에서는 함수가 반환하는 데이터 유형이 비교적 명확하나, 예외가 발생한 경우에는 함수가 반환하는 데이터의 형식이 더 유연하다.
+
+- `예외`, `오류코드`, `null`, `-1` 와 같이 `정의된 값` 혹은 `빈 객체` 나 `빈 컬렉션` 을 반환할 수도 있다.
+
+<br>
+
+> 오류를 반환하는 방법: 오류코드 반환
+
+`Java`, `Python` 와 같은 언어는 주로 `예외`를 사용하여 함수의 오류를 처리하기 때문에 오류코드를 거의 사용하지 않는다. 반면 `C 언어` 같은 경우 예외 처리 구문 메커니즘이 없어 `오류코드` 반환을 통해 함수의 오류를 처리한다.
+
+<br>
+
+> 오류를 반환하는 방법: null 반환
+
+`null` 은 `값이 존재하지 않음` 을 표현할 때 사용하기도 하나, null 에 대한 처리를 잊어버린다면, `NullPointerException` 에러가 발생할 수 있다.
+
+- null 을 반환할 가능성이 있는 함수를 많이 정의하게 된다면, 코드의 많은 부분이 `null 에 대한 처리` 로 구성되어 코드가 `복잡` 해 질 수 있다.
+- null 을 처리하는 코드가 비즈니스 논리 코드와 결합될 경우, 코드의 `가독성`이 떨어질 수 있다.
+
+<br>
+
+```java
+public class UserService {
+	private UserRepo userRepo; 
+	
+	public User getUser(String telephone) {
+		// 사용자가 없을 경우 null 반환
+		return null;
+	}
+}
+
+// getUser() 사용
+User user = userService.getUser("1891771****");
+if (user != null) { // null 판단을 하지 않으면 NPE 예외 발생 가능
+	String email = user.getEmail();
+	if (email != null) { // null 판단을 하지 않으면 NPE 예외 발생 가능
+		String excapedEmail = email.replaceAll("@", "#");
+	}
+}
+```
+
+<br>
+
+`null` 을 반환하는 형태에는 많은 단점이 있지만 `get`, `find`, `select`, `search`, `query` 로 시작하는 `조회함수` 와 같은 경우, 데이터가 없는 것은 정상적인 결과이며 예외가 아닌 `null(부재를 의미)` 을 반환하는 것이 합리적이다.
