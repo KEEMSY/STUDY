@@ -289,4 +289,36 @@ if (user != null) { // null 판단을 하지 않으면 NPE 예외 발생 가능
 
 <br>
 
-`null` 을 반환하는 형태에는 많은 단점이 있지만 `get`, `find`, `select`, `search`, `query` 로 시작하는 `조회함수` 와 같은 경우, 데이터가 없는 것은 정상적인 결과이며 예외가 아닌 `null(부재를 의미)` 을 반환하는 것이 합리적이다.
+> 오류를 반환하는 방법: 비어있는 객체 반환
+
+null 을 반환하는 것은 언급한 단점 때문에 null 을 반환하기 보다는 `빈 문자열` 혹은 `빈 컬렉션` 을 반환하여, `null 판단 로직`을 피하기도한다.
+
+<br>
+
+```java
+public class UserService {
+	private UserRepo userRepo; 
+	
+	public User getUsersByPrefix(String telephonePrefix) {
+		// 사용자가 없을 경우 빈 컬렉션 반환
+		return Collections.emptyList();
+	}
+}
+
+// getUsers() 사용
+List<User> users = userService.getUser("189");
+for (User user: users) { // null 판단 불필요
+	// .. 로직
+}
+
+// null 대신 빈 문자열 사용
+public String retrieveUppercasaeLetters(String text) {
+	// text에 대문자가 없을 경우 빈 문자열 반환
+	return "";
+}
+
+// retrieveUppercasaeLetters() 사용
+String uppercaseLetters = retrieveUppercasaeLetters("glfvprosha");
+int length = uppercaseLetters.lenghth(); // null 판단 불필요
+System.out.println("Contains" + length + " upper case letters.");
+```
