@@ -1,3 +1,6 @@
+# Trouble Shooting Template
+
+```markdown
 # Trouble Shooting
 
 ## 문제 정의
@@ -29,6 +32,7 @@
 
 <!-- 이슈가 해결되었는지 관찰 하고 해결되지 않았다면, 원인 추론 또는 해결 방안 수립 단계에서 다시 진행한다. -->
 
+```
 
 
 
