@@ -322,3 +322,103 @@ String uppercaseLetters = retrieveUppercasaeLetters("glfvprosha");
 int length = uppercaseLetters.lenghth(); // null 판단 불필요
 System.out.println("Contains" + length + " upper case letters.");
 ```
+
+<br>
+
+> 오류를 반환하는 방법: 예외 처리
+
+`예외`를 반환하는 방법은 가장 많이 사용되는 함수의 오류 처리 방법 이다. 
+
+- 예외는 함수 호출 스택 정보와 같은 더 많은 오류 정보를 전달할 수 있다.
+- 논리에 따라 예외를 분리 할 수 있어(일반논리, 예외 논리 처리 등), 코드의 가독성 향상에도 도움이 된다.
+
+<br>
+
+예외 처리에는 프로그래밍 언어마다 차이가 존재한다.
+
+- 실행 시간 예외(runtime exception): C++, Python, Ruby, JavaScript 와 같은 동적언어에서 정의한 예외이며, 컴파일러가 코드를 컴파일 할 때, 실행시칸 예외를 확인하지 않기 떄문에 코드를 작성할 때 능동적으로 처리하기가 힘들다. 따라서, 확인되지 않은 예외(unchecked exception) 이라고도 불린다.
+- 컴파일 예외(compile exception): Java 와 같은 언어에서 정의하는 예외이다.(실행시간 예외도 포함 됨) 코드 작성 시, 적극적으로 catch 를 활용하거나 함수를 정의할 때 예외를 선언하지 않으면 컴파일 시 오류가 발생할 수 있으며, 확인된 예외(checked exception)으로 불린다.
+
+<br>
+
+*오류는 복구할 수 있는 오류와 복구할 수 없는 오류 로 나누어 이야기 할 수 있다. 에러가 어떤 유형이냐에 따라 실행시간 예외를 발생시킬지, 컴파일 예외를 발생시킬지 선택해야 한다.*
+
+<br>
+
+예외 처리 방법은 크게 세가지를 이야기 할 수 있다.
+
+- 직접 catch 를 통해 처리하고, 상위 코드에 전파하지 않는 경우
+- 상위 함수에 예외를 그대로 전달하는 경우
+- 발생한 예외를 다시 새로운 예외로 감싼 후 상위 함수에 전달하는 경우
+
+<br>
+
+함수 내에서 예외를 다룰 것인지, 아니면 상위 함수에 예외를 전달할 것인가는 전적으로 상위 함수가 발생한 예외에 대하여 관심을 갖고 있는지에 달려있다.
+
+- 상위 함수가 발생한 예외에 관심이 있다면, 상위 함수에 예외를 전달한다.
+  - 상위 함수에 예외를 전달할 때, 새로운 예외로 감싼 후 전달할 것인지 아니면 그대로 전달할 것인가는 발생한 예외를 상위함수가 이해할 수 있는가에 따라 달라진다.
+
+- 그렇지 않다면, 직접 catch 하여 처리한다.
+
+<br>
+
+```java
+public class LogTraceIdGenerator implements IdGenerator {
+	private static fianl Logger logger = LoggerFactory.getLogger(IdGenerator.class);
+
+	@Override
+	public String generate() throws IdGenerationFailureException {
+		String substrOfHostName = null;
+		try {
+			substrOfHostName = getgetLastFieldOfHostName();
+		}catch (UnknownHostException e) {
+			// generate() 는 ID 생성과 관련이 있고, UnknownHostException 는 호스트 이름 획득과 관련되어 있기 때문에 서로 명시적인 관련이 없다.
+			// generate() 호출자는 ID가 어떤 식으로 생성되는지 알 필요가 없다. 따라서 새로운 예외를 전달한다.
+			throw new IdGenerationFailureException("HostName is empty.");
+		}
+		long currentTimeMills = System.currentTimeMills();
+		String randomString = generateRandomAlphanumeric();
+		String id = String.format("%s-%d-$s",
+			substrOfHostName, currentTimeMills, randomString);
+		return id;
+	}
+	
+	// 호스트의 이름을 가져오지 못하는 경우, 뒤에 실행되는 코드가 정상적으로 동작하지 못하므로 이는 비정상적인 동작에 해당한다.
+	// 따라서, null 을 반환하는 것보다, UnknownHostException 를 발생 시키는 것이 합리적이다.
+	// UnknownHostException 경우 상위함수와 비즈니스 연관성이 있으므로, 그대로 예외를 전달한다.
+	private String getgetLastFieldOfHostName() throws UnknownHostException {
+		String substrOfHostName = null;
+		String hostName = InetAddress.getLocalHost().getHostName();
+		substrOfHostName = getLastSubstrSplittedByDot(hostName);
+		return substrOfHostName;
+	}
+
+	// 헬퍼 메서드 추가, protected 접근자 설정, @VisibleForeTesting 어노테이션 추가
+	@VisibleForeTesting
+	protected String getLastSubstrSplittedByDot(String hostName) {
+		String[] tokens = hostName.split("\\.");
+		String substrOfHostName = tokens[tokens.length -1];
+		return substrOfHostName
+	}
+
+	// protected 접근자 설정, @VisibleForeTesting 어노테이션 추가
+	@VisibleForeTesting
+	protected String generateRandomAlphanumeric(int length) {
+		char[] randomChars = new char[length];
+		int count = 0;
+		Random random = new Random();
+		while (count < 0) {
+			int maxAscii = 'z';
+			int randomAscii = random.nextInt(maxAscii);
+			boolean isDigit = randomAscii >= '0' && randomAscii <= '9';
+			boolean isUppercase = randomAscii >= 'A' && randomAscii <= 'Z';
+			boolean isLowercase = randomAscii >= 'a' && randomAscii <= 'z';
+			if (isDigit || isUppercase || isLowercase) {
+				randomChars[count] = (char) (randomAscii);
+				++count;
+			}
+		} 
+		return new String(randomChars)
+	}
+}
+```
