@@ -65,6 +65,113 @@
 - 불필요한 객체를 모두 생성하여 메모리에 상주시키는 것은 **메모리 낭비의 문제**와 매번 공유 자원의 객체에 접근할 때마다 **자원 중복 여부를 체크**하는 여전한 문제점이 존재한다.
 - `Sigleton` 으로 생성한 자원은 프로그램이 종료 될 때까지 메모리에 상주한다.
 
+<br><hr>
+
+## 싱글턴 패턴 구현
+
+싱글턴을 구현하는 방법은 다양하며, 크게 5가지 방법을 이야기 할 수 있다.
+
+- 즉시 초기화(Eager Initialization)
+- 늦은 초기화(Lazy Initialization)
+- 이중 잠금(Double-Checked Locking)
+- 홀더에 의한 초기화
+- 열거형 사용
+
+> 싱글턴을 개발하기 전, 고려하면 좋을 사항
+
+1. 생성자는 new 예약어를 통한 인스턴스 생성을 피하기 위해 private 접근 권한을 갖게 한다.
+2. 객체가 생성될 때 스레드 안정성을 보장하는지 확인한다.
+3. 지연 로딩을 지원하는지 확인한다.
+4. getInstance() 함수의 성능은 충분한지 확인한다.
+
+<br>
+
+> 즉시 초기화, Eager Initialization
+
+```java
+public class IdGenerator {
+	private AtomicLong id = new AtomicLong(0);
+	private static final IdGenerator instance = new IdGenerator();
+	
+	private IdGenerator() {}
+	public static IdGenerator getInstance() {
+		return instance;
+	}
+
+	public long getId() {
+		return id.incrementAndGet();
+	}
+}
+```
+
+싱글턴 인스턴스는 클래스가 메모리에 적재될 때 이미 생성되어 초기화가 완료되어 인스턴스 생성 프로세스는 스레드 안전한 상태를 보장한다.
+
+- 실행 시간 오류를 피하고, 초기화 과정으로 인한 성능 문제를 피할 수 있다.
+- Lazy Loading 을 지원하지 않으며, 인스턴스는 사용되는 시점이 아니라 미리 생성된다.
+
+*Fail-Fast 설계 원칙에 따르는 방법이다.*
+
+<br>
+
+> 늦은 초기화(Lazy Initialization)
+
+```java
+public class IdGenerator {
+	private AtomicLong id = new AtomicLong(0);
+	private static IdGenerator instance;
+	
+	private IdGenerator() {}
+	public static synchronized IdGenerator getInstance() {
+		if (instance == null) {
+			instance = new IdGenerator();
+		}
+		return instance;
+	}
+
+	public long getId() {
+		return id.incrementAndGet();
+	}
+}
+```
+
+늦은 초기화는 즉시 초기화 방식과는 달리, 지연 적재를 지원하여, 인스턴스의 생성과 초기화가 실제로 사용되기 전까지 일어나지 않는다.
+
+- 시간이 오래걸리는 초기화 작업이 인스턴스가 사용되기 직전에 이루어진다면 시스템 성능에 영향을 줄 수 있다.
+- getInstance() 함수에 추가적인 잠금 synchronized 로 인해 함수의 동시성이 1로 바뀌어 낮은 동시성으로 인한 병목 현상이 발생 할 수 있다.
+
+<br>
+
+> 이중 잠금(Double-Checked Locking)
+
+```java
+public class IdGenerator {
+	private AtomicLong id = new AtomicLong(0);
+	private static volatile IdGenerator instance;
+	
+	private IdGenerator() {}
+	
+	public static synchronized IdGenerator getInstance() {
+		if (instance == null) {
+			synchronized(IdGenerator.class) { // 클래스 레벨의 잠금 처리
+				if (instance == null) {
+					instance = new IdGenerator();
+				}
+			}
+		}
+		return instance;
+	}
+
+	public long getId() {
+		return id.incrementAndGet();
+	}
+}
+```
+
+이중 잠금 방식은 지연 적재와 높은 동시성을 모두 지원하는 싱글턴 구현 방식이다.
+
+- getInstance()  함수가 호출 될 때 잠금이 발생하지 않는다.
+- instance 멤버 변수의 경우, 명령어 재정렬 문제가 발생할 수 있어, volatile 키워드를 사용하여, 해당 문제를 해결한다.
+
 <br><hr><br>
 
 ## **예제 코드**
