@@ -219,6 +219,150 @@ Java 의 **열거 형이 가지는 특성**을 이용하여 인스턴스 생성 
 - **인스턴스의 유일성(Instance Uniqueness):** Enum은 상수를 나타내는데, 각 상수는 해당 enum 타입의 유일한 인스턴스이다. 따라서 enum을 사용하면 인스턴스의 유일성이 보장된다.
 
 
+<br><br><hr>
+
+## 싱글턴 패턴의 단점
+
+싱글턴 패턴은 일반적으로 사용되긴하지만, 다양한 단점이 존재하여 문제가 발생하는 경우가 많으며, 이에 따라 안티 패턴으로 인식되기도 한다. 따라서 가급적이면 사용하지 않는 것이 좋다.
+
+- 클래스 간의 의존성을 감춘다.
+- 코드의 확장성에 영향을 준다.
+- 테스트 용이성에 영향을 미친다.
+- 매개변수가 있는 생성자를 지원하지 않는다.
+
+<br>
+
+> 클래스 간의 의존성을 감춘다.
+
+코드 가독성 측면에서 클래스 간의 의존성이 확실히 들어나는 것은 매우 중요하다. 그리고 클래스 간의 의존성은 다음과 같은 방법을 통해 식별할 수있다.
+
+- 생성자를 통해 선언된 클래스 간의 의존성을 확인한다.
+- 함수의 매개변수 전달을 통해 의존성을 확인할 수 있다.
+
+<Br>
+
+그러나 싱글턴 클래스는 명시적으로 생성할 필요가 없고 매개변수 전달에 의존할 필요도 없으며 함수에서 직접 호출할 수 있음에도 의존성이 전혀 드러나지 않는다.
+
+- 각 함수의 코드 구현 자체를 깊게 확인해야만 해당 클래스가 어떤 싱글턴 클래스에 의존하는지 알 수 있다.
+
+<br>
+
+> 코드의 확장성에 영향을 미친다.
+
+싱글턴 클래스는 하나의 인스턴스만 생성할 수 있다. 하지만 나중에 두개 이상의 인스턴스가 필요하게 될 경우, 코드를 전면적으로 수정해야 한다.
+
+- 데이터베이스 연결 풀이 싱글턴 클래스로 설계되어 있다면, 문제가 될 수 있다.
+
+
+<br>
+
+> 코드의 테스트 용이성에 영향을 미친다.
+
+싱글턴 클래스는 전역적인 상태를 갖는다. 이는 독립적인 환경에서 이뤄져야하는 테스트와는 달리, 테스트간 싱글턴 클래스가 공유되어 예측할 수 없는 동작이 발생할 수 있다.
+
+<br>
+
+> 매개변수가 있는 생성자를 지원하지 않는다.
+
+싱글턴 패턴은 매개변수가 있는 생성자를 지원하지 않아 연결 풀이 있는 싱글턴 객체를 생성할 때, 매개변수를 통해 연결 풀의 크기를 지정할 수 없다. 하지만 다음과 같은 방법을 통해 해당 문제를 해결할 수 있다.
+
+1. **init() 메서드를 통해매개변수를 전달한다.**
+
+```java
+public class Singleton {
+	private static Singleton instance = null;
+	private final int paramA;
+	private final int paramB;
+
+	private Singleton(int paramA, int paramB) {
+		this.paramA = paramA;
+		this.paramB = paramB;
+	}
+
+	public static Singleton getInstance() {
+		if (instance == null) {
+			throw new RuntimeException("Run init() first.");
+		}
+		return instance;
+	}
+
+	public synchronized static Singleton init(int paramA, int paramB) {
+		if (instance != null) {
+			throw new RuntimeException("Singleton has been created!");
+		}
+		instance = new Singleton(paramA, paramB);
+		return instance;
+	}
+}
+
+// init() 함수를 호출하고 getInstance() 함수를 통해 객체를 가져옴
+Singleton.init(10, 50);
+Singleton singleton = Singleton.getInstance();
+```
+
+<br>
+
+2. **매개변수를 getInstance() 함수에 넣는다.**
+
+```java
+public class Singleton {
+	private static Singleton instance = null;
+	private final int paramA;
+	private final int paramB;
+
+	private Singleton(int paramA, int paramB) {
+		this.paramA = paramA;
+		this.paramB = paramB;
+	}
+
+	public synchronized static Singleton getInstance(int paramA, int paramB) {
+		if (instance == null) {
+			instance = new Singleton(paramA, paramB);
+		}
+		return instance;
+	}
+}
+
+Singleton singleton = Singleton.getInstance(10, 50);
+
+// 문제의 경우
+Singleton singleton1 = Singleton.getInstance(10, 50);
+Singleton singleton2 = Singleton.getInstance(10, 50);
+```
+
+getIntance() 함수가 두번 호출 될 경우, 두번째의 매개변수는 효과가 없을 뿐만 아니라 빋드 프로세스도 이를 알려주지 않아 잘못된 결과를 가져온다.
+
+<br>
+
+3. **매개변수를 전역변수에 넣는다.**
+
+```java
+public class Config {
+	public static final int PARAM_A = 123;
+	public static final int PARAM_B = 456;
+}
+
+public class Singleton {
+	private static Singleton instance = null;
+	private final int paramA;
+	private final int paramB;
+
+	private Singleton() {
+		this.paramA = Config.PARAM_A;
+		this.paramB = Config.PARAM_B;
+	}
+
+	public synchronized static Singleton getInstance() {
+		if (instance == null) {
+			instance = new Singleton();
+		}
+		return instance;
+	}
+}
+```
+
+이 방법은 가장 명확하고 오류가 발생할 여지가 적은 방법이다.
+
 
 <br><hr><br>
 
