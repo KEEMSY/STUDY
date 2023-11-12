@@ -172,6 +172,54 @@ public class IdGenerator {
 - getInstance()  함수가 호출 될 때 잠금이 발생하지 않는다.
 - instance 멤버 변수의 경우, 명령어 재정렬 문제가 발생할 수 있어, volatile 키워드를 사용하여, 해당 문제를 해결한다.
 
+<br>
+
+> 홀더에 의한 초기화(Initialization on demand holder idiom)
+
+```java
+public class IdGenerator {
+	private AtomicLong id = new AtomicLong(0);
+	
+	private IdGenerator() {}
+
+	private static class SingletonHoler {
+		private static final IdGenerator instance = new IdGenerator();
+	}
+	
+	public static IdGenerator getInstance() {
+		return SingletonHolder.instance;
+	}
+
+	public long getId() {
+		return id.incrementAndGet();
+	}
+}
+```
+
+- 정적 내부 클래스로 SingletonHolder 를 사용함으로써, 인스턴스의 유일성과 생성 프로세스의 스레드 안정성이 JVM에 의해 보장된다.
+- 홀더에 의한 초기화 방식은 스레드 안정성을 보장할 뿐만아니라, 지연 적재도 가능한 방법이다.
+
+<br>
+
+> 열거(Enum)
+
+```java
+public enum IdGenerator {
+	INSTANCE;
+	private AtomicLong id = new AtomiocLong(0);
+
+	public long getId() {
+		return id.incrementAndGet();
+	}
+}
+```
+
+Java 의 **열거 형이 가지는 특성**을 이용하여 인스턴스 생성 시, 스레드 안정성과 인스턴스의 유일성을 보장한다.
+- **스레드 안전성(Thread Safety):** Enum은 JVM에 의해 클래스 로딩 시점에 초기화되며, 그 이후로는 다시 초기화되지 않는다. 따라서 여러 스레드에서 동시에 접근하더라도 안전하게 초기화될 수 있다..
+- **인스턴스의 유일성(Instance Uniqueness):** Enum은 상수를 나타내는데, 각 상수는 해당 enum 타입의 유일한 인스턴스이다. 따라서 enum을 사용하면 인스턴스의 유일성이 보장된다.
+
+
+
 <br><hr><br>
 
 ## **예제 코드**
