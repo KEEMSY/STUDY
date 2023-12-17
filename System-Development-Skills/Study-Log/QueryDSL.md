@@ -83,9 +83,143 @@ public List<Article> findByUserLevel(String level) {
 
 코드의 양은 늘어났지만, 코드의 `가독성` 은 개선되었고, 실행 시점 이전에 잘못된 `버그`를 컴파일 오류를 통해 사전에 방지할 수 있다. 즉, `Native Query` 에서의 불편함을 개선할 수 있는 방법이다.
 
-## 소주제 2
+<br><hr>
 
-_관련된 세부 정보_
+## QueryDSL 을 사용하기위한 설정
+
+`QueryDSL` 을 사용하기 위해 설정하는 방법은, `build.gradle` 내 의존성을 추가하고, `QueryDSLConfig` 를 생성함으로써 사용할 수 있다. 그러나` Spring Boot` 의 버전이 2.X 인지, 3.X 인지에 따라 `build.gradle` 설정이 달라짐을 주의 해야 한다.
+
+
+### 공통 설정 
+
+> `QuerydslConfiguration.java`
+
+```java
+@Configuration  
+public class QuerydslConfiguration {  
+    @PersistenceContext  
+    private EntityManager entityManager;  
+    @Bean  
+    public JPAQueryFactory jpaQueryFactory() {  
+        return new JPAQueryFactory(entityManager);  
+    }  
+}
+```
+
+### Spring Boot 2.X 에서의 설정 방법
+
+```groovy
+buildscript {  
+    ext {  
+        queryDslVersion = "5.0.0"  
+    }  
+}
+
+plugins {  
+    id 'org.springframework.boot' version '2.6.8'  
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'  
+    id 'java'  
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"  
+}
+
+dependencies {
+	.
+	.
+	.
+	// ---------- QueryDsl START ----------  
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"  
+	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
+	// ---------- QueryDsl END   ----------  
+
+	.
+	.
+	.
+}
+
+
+// ---------- QueryDsl START ----------  
+def querydslDir = "$buildDir/generated/'querydsl'"  
+  
+// JPA 사용여부 및 사용 경로 설정  
+querydsl {  
+    jpa = true  
+    querydslSourcesDir = querydslDir  
+}  
+  
+// build 시 사용할 sourceSet 추가 설정  
+sourceSets {  
+    main.java.srcDir querydslDir  
+}  
+  
+// querydsl 컴파일 시 사용할 옵션 설정  
+compileQuerydsl {  
+    options.annotationProcessorPath = configurations.querydsl  
+}  
+  
+// querydsl 이 compileClassPath 를 상속하도록 설정  
+configurations {  
+    compileOnly {  
+        extendsFrom annotationProcessor  
+    }  
+    querydsl.extendsFrom compileClasspath  
+}
+// ---------- QueryDsl END   ----------  
+
+```
+
+### Spring Boot 3.X 에서의 설정 방법
+
+> `build.gradle`
+
+```groovy
+buildscript {  
+    ext {  
+        springBootVersion = '3.1.5'  
+        queryDslVersion = '5.0.0'  
+        mysqlConnectorVersion = '8.0.23'  
+    }  
+  
+    repositories {  
+        mavenCentral()  
+    }  
+  
+    dependencies {  
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"  
+    }  
+}
+
+dependencies {  
+	.
+	.
+	.
+        // ---------- QueryDsl START ----------  
+        implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'  
+        annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"  
+        annotationProcessor "jakarta.annotation:jakarta.annotation-api"  
+        annotationProcessor "jakarta.persistence:jakarta.persistence-api"  
+        // ---------- QueryDsl END   ----------  
+        .
+        .
+        .
+}
+
+// ---------- QueryDsl START ----------  
+// QueryDsl 빌드 옵션 (선택)
+def querydslDir = "$buildDir/generated/querydsl"  
+  
+sourceSets {  
+    main.java.srcDirs += [ querydslDir ]  
+}  
+  
+tasks.withType(JavaCompile) {  
+    options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)  
+}  
+  
+clean.doLast {  
+    file(querydslDir).deleteDir()  
+}  
+// === ⭐ QueryDsl 빌드 옵션 (선택)  END ===
+```
 
 ---
 
