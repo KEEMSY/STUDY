@@ -227,9 +227,24 @@ clean.doLast {
 
 ### Answers to Preliminary Questions(사전 질문에 대한 답변)
 
-- _질문 1에 대한 응답_
-- _질문 2에 대한 응답_
-- _질문 3에 대한 응답_
+> QueryDSL 을 사용하는 이유는 무엇인가? 기존 도구들과 비교하여 어떤 장단점이 존재하는가?
+
+내가 생각하는 QueryDSL 을 사용하는 이유는  ORM 의 편리함을 누리면서, Native SQL 을 작성하는 것과 가장 유사하게 작성할 수 있다는 것이다. 그러나 기존의 ORM(JPA 인터페이스) 외에 추가적인 설정이 필요하다는 것과 사용 간 새로운 (성능)문제가 발생할 수 있다는 것이 단점으로 이야기 할 수 있을 것 같다.
+
+- ORM이 주는 장점 중 하나인, 코드의 컴파일러를 통해 에러를 사전에 방지할 수 있다.
+- Pagination 관련하여, Count() 쿼리를 발생시켜 성능적인 문제가 발생할 수 있다.(물론 이를 해결하기 위한 방법은 존재한다.)
+- 작성일 기준, 현재 많이 사용되는 Spring Boot 2.X 관련 설정과 Spring Boot 3.X 관련 설정 이 다르다는 것도 주의해야한다.
+
+이와 유사한 다른 기술로는 JPQL 을 이야기할 수 있으나, JPQL 을 사용하기 위해서는 해당 기술의 인터페이스를 따로 학습을 해야한다는 큰 단점이 존재한다. 물론 QueryDSL 또한 사용을 위해서는 제공하는 API 를 학습해야하지만, SQL 에 익숙한 사람이라면 JPQL 보다 QueryDSL의 학습이 훨씬더 쉬울 것이라 생각한다.
+
+- 관련된 다른 기술: JPQL(Java Persistence Query Language), MyBatis, Hibernate Query Language (HQL), Criteria API
+
+
+> QueryDSL 을 사용하기 위해서는 어떤 환경 설정이 필요한가?
+
+
+
+> 이와 유사한 다른 기술에는 어떤 기술이 존재하는가?
 
 ### Evolving Thoughts
 
