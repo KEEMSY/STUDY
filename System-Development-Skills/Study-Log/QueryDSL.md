@@ -239,10 +239,15 @@ clean.doLast {
 
 - 관련된 다른 기술: JPQL(Java Persistence Query Language), MyBatis, Hibernate Query Language (HQL), Criteria API
 
+<br>
 
 > QueryDSL 을 사용하기 위해서는 어떤 환경 설정이 필요한가?
 
+QueryDSL 을 사용하기 위해서는 필요한 종속성을 설치하고, 관련 설정파일을 생성해야한다. 주의해야할 점은 Spring Boot 버전에 따라 추가해야하는 종속성이 다르다는 것이다.
 
+보다 더 고급정보가 필요하다면 잘 정리된 내용인 [공식 QueryDSL 문서](http://querydsl.com/)를 참조하는 것이 좋다.
+
+<br>
 
 > 이와 유사한 다른 기술에는 어떤 기술이 존재하는가?
 
