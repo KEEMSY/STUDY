@@ -89,6 +89,8 @@ public List<Article> findByUserLevel(String level) {
 
 `QueryDSL` 을 사용하기 위해 설정하는 방법은, `build.gradle` 내 의존성을 추가하고, `QueryDSLConfig` 를 생성함으로써 사용할 수 있다. 그러나` Spring Boot` 의 버전이 2.X 인지, 3.X 인지에 따라 `build.gradle` 설정이 달라짐을 주의 해야 한다.
 
+- SpringBoot 2.6 이상, 3.X 모두 QueryDSL 5.0.0 버전에 의존한다.
+- SpringBoot 3.X 버전의 경우, 지원하는 패키지가 `javax` 에서 `jakarta` 로 변경되어 QueryDSL 을 설정하는 세팅이 달라진다.
 
 ### 공통 설정 
 
@@ -166,6 +168,12 @@ configurations {
 // ---------- QueryDsl END   ----------  
 
 ```
+Spring Boot 2.X 에서의 설정의 특징은 `javax` 패키지를 지원한다는 것과 Gradle 플러그인을 사용하다는 것이다. Gradle 플러그인이란 Gradle 에서 동작하는 Task 의 모음으로 QueryDSL Gradle 플러그인을 추가하여 Gradle 이 QueryDSL 관련 Task 를 지원할 수 있도록 설정하는 작업을 진행한다.
+
+- QueryDSL 버전을 명시하고 플러그인을 추가한다.
+- Dependency 를 추가하고 QueryDSL 관련 Task 를 설정한다.
+
+<br>
 
 ### Spring Boot 3.X 에서의 설정 방법
 
@@ -193,8 +201,8 @@ dependencies {
 	.
 	.
         // ---------- QueryDsl START ----------  
-        implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'  
-        annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"  
+        implementation 'com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta'  
+        annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"  
         annotationProcessor "jakarta.annotation:jakarta.annotation-api"  
         annotationProcessor "jakarta.persistence:jakarta.persistence-api"  
         // ---------- QueryDsl END   ----------  
@@ -220,6 +228,8 @@ clean.doLast {
 }  
 // === ⭐ QueryDsl 빌드 옵션 (선택)  END ===
 ```
+
+Spring Boot 3.X 에서의 설정의 특징은 `jakarta` 패키지를 사용한다는 것과 QueryDSL 플러그인을 사용하지 않고, Gradle 내부 Task 와 같이 동작하도록 변경되었다는 것이다.
 
 ---
 
