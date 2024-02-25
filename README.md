@@ -2,42 +2,41 @@
 
 *멈추지 않는다면 얼마나 천천히 가는지는 문제가 되지 않는다. -공자-*
 
-## **컨텍스트**
+## Contents
 
-나는 개발이 너무 재밌어서 평생 개발하며 살고 싶다는 궁극적인 삶의 목표가 있다.
-
-하지만, 현재의 나는 모르고 부족한 것이 많다.(*미래에도 그럴 것 같다.*)
-
-지속적으로 기술을 배우고 기록하여 이를 극복하고 목표를 이루고자한다.
-
-내가 가진 최고의 장점인 **꾸준함** 과 **성실함** 으로.
-
-<br>
-
-## **결정**
-
-다양한 방법(SW 관련 독서, 강의, 검색)을 통해 다양한 주제의 내용을 공부하고 기록한다.
-
-- 모든 주제에는 `readme.md` 를 작성한다.
-
-  - `readme` 에는 해당 주제를 공부하게 된 배경, 주제에 대한 간단한 설명, 관련 내용을 바로 볼 수 있게 목차를 작성한다.
-- 모든 작업은 관련 `branch` 를 통해 작업하고 PR을 작성한다.
-
-  - PR에는 당시 생각의 흐름(공부 전 -> 공부 후)을 정리한다.
-
-<br>
-
-## **결과**
-
-다음과 같은 카테고리 로 정리한다.
-
-- **Books**: 책을 읽고 책의 내용을 정리한다.
-- **Architecture**: 아키텍처 혹은 아키텍처와 관련된 내용을 정리한다.
-- **DB**: 데이터베이스 관련 내용을 정리한다.
-- **Infrastructure**: 인프라 관련된 내용을 정리한다.
-- **Language**: 언어 및 프레임워크에 관련된 내용을 정리한다.
-- **System-Development-Skills**: 개발에 도움이 되는 내용을 정리한다.
-
-<br>
-
-### ***부족한 점, 잘못된 점, 반대되는 의견 혹은 같은 주제로 이야기 하고 싶은 것이 있다면, 언제든 편하게 이야기 해주시면 감사하겠습니다.***
+```text
+├── Architecture
+│   ├── ArchitectureDesign
+│   └── CodeDesign
+│       ├── DDD
+│       ├── GoF
+│       │   ├── BehavioralPatterns
+│       │   ├── CreationalPatterns
+│       │   └── StructuralPatterns
+│       └── SOLID
+├── Books
+│   ├── Clean-Architecture
+│   ├── Domain-Driven-Design-Distilled
+│   ├── Fundamentals-Of-SoftwareArchitecture
+│   └── Software-Engineering-at-Google
+├── Stacks
+│   ├── Framework
+│   │   ├── Django
+│   │   └── JPA
+│   ├── Infrastructure
+│   │   ├── Docker
+│   │   ├── Linux
+│   │   ├── MySQL
+│   │   ├── Nginx
+│   │   └── k8s
+│   └── Language
+│       ├── Java
+│       │   └── JavaMultiThreading
+│       └── Kotlin
+├── System-Development-Skills
+│   ├── CS
+│   │   ├── DB
+│   │   └── Network
+│   └── Study-Log
+├── Template
+```
