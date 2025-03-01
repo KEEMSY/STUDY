@@ -4,6 +4,11 @@ macOS용 Karabiner-Elements 키보드 커스터마이징 설정
 
 ## 설정 내용
 
+### 설정 파일 복사
+```bash
+cp -r karabiner-elements ~/.config/
+```
+
 ### 키보드 설정
 - 내장 키보드: Caps Lock을 Hyper 키(Command + Control + Option + Shift)로 변경
 - 윈도우용 키보드의 맥북 키보드 매핑(적용 키보드: REALFORCE HYBRID TKL) 
