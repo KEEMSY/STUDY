@@ -1,0 +1,30 @@
+{
+    "description": "내장 키보드 설정",
+    "manipulators": [
+        {
+            "conditions": [
+                {
+                    "identifiers": [
+                        {
+                            "is_built_in_keyboard": true,
+                            "is_keyboard": true
+                        }
+                    ],
+                    "type": "device_if"
+                }
+            ],
+            "description": "Change caps_lock to command+control+option+shift",
+            "from": {
+                "key_code": "caps_lock",
+                "modifiers": { "optional": ["any"] }
+            },
+            "to": [
+                {
+                    "key_code": "left_command",
+                    "modifiers": ["left_control", "left_option", "left_shift"]
+                }
+            ],
+            "type": "basic"
+        }
+    ]
+}
