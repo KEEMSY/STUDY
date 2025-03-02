@@ -1,0 +1,195 @@
+{
+    "description": "Hyper Key 설정",
+    "manipulators": [
+        {
+            "conditions": [
+                {
+                    "identifiers": [
+                        {
+                            "is_built_in_keyboard": true,
+                            "is_keyboard": true
+                        }
+                    ],
+                    "type": "device_if"
+                }
+            ],
+            "description": "Change caps_lock to command+control+option+shift (내장 키보드용)",
+            "from": {
+                "key_code": "caps_lock",
+                "modifiers": { "optional": ["any"] }
+            },
+            "to": [
+                {
+                    "key_code": "left_command",
+                    "modifiers": ["left_control", "left_option", "left_shift"]
+                }
+            ],
+            "type": "basic"
+        },
+        {
+            "conditions": [
+                {
+                    "identifiers": [
+                        {
+                            "is_keyboard": true,
+                            "product_id": 771,
+                            "vendor_id": 2131
+                        }
+                    ],
+                    "type": "device_if"
+                }
+            ],
+            "description": "Windows 용 키보드 설정(REALFORCE HYBRID TKL) - left_option을 left_command로 변경",
+            "from": {
+                "key_code": "left_option",
+                "modifiers": { "optional": ["any"] }
+            },
+            "to": [
+                {
+                    "key_code": "left_command",
+                    "lazy": true
+                }
+            ],
+            "type": "basic"
+        },
+        {
+            "conditions": [
+                {
+                    "identifiers": [
+                        {
+                            "is_keyboard": true,
+                            "product_id": 771,
+                            "vendor_id": 2131
+                        }
+                    ],
+                    "type": "device_if"
+                }
+            ],
+            "description": "Windows 용 키보드 설정(REALFORCE HYBRID TKL) - left_command를 left_option으로 변경",
+            "from": {
+                "key_code": "left_command",
+                "modifiers": { "optional": ["any"] }
+            },
+            "to": [
+                {
+                    "key_code": "left_option",
+                    "lazy": true
+                }
+            ],
+            "type": "basic"
+        },
+        {
+            "conditions": [
+                {
+                    "identifiers": [
+                        {
+                            "is_keyboard": true,
+                            "product_id": 771,
+                            "vendor_id": 2131
+                        }
+                    ],
+                    "type": "device_if"
+                }
+            ],
+            "description": "Windows 용 키보드 설정(REALFORCE HYBRID TKL) - caps_lock을 Hyper key로 변경",
+            "from": {
+                "key_code": "caps_lock",
+                "modifiers": { "optional": ["any"] }
+            },
+            "to": [
+                {
+                    "key_code": "left_command",
+                    "modifiers": ["left_control", "left_option", "left_shift"]
+                }
+            ],
+            "type": "basic"
+        },
+        {
+            "description": "모든 키보드 - Hyper + F: 한영 전환",
+            "from": {
+                "key_code": "f",
+                "modifiers": { "mandatory": ["left_command", "left_control", "left_option", "left_shift"] }
+            },
+            "to": [
+                {
+                    "key_code": "9",
+                    "modifiers": ["left_command"]
+                }
+            ],
+            "type": "basic"
+        },
+        {
+            "description": "모든 키보드 - Hyper + R: 스팟라이트(맥북 설정 값: cmd + backslash) ",
+            "from": {
+                "key_code": "r",
+                "modifiers": { "mandatory": ["left_command", "left_control", "left_option", "left_shift"] }
+            },
+            "to": [
+                {
+                    "key_code": "backslash",
+                    "modifiers": ["left_command"]
+                }
+            ],
+            "type": "basic"
+        },
+        {
+            "description": "모든 키보드 - Hyper + E: Homerow(맥북 설정 값: cmd + space)",
+            "from": {
+                "key_code": "e",
+                "modifiers": { "mandatory": ["left_command", "left_control", "left_option", "left_shift"] }
+            },
+            "to": [
+                {
+                    "key_code": "spacebar",
+                    "modifiers": ["left_command"]
+                }
+            ],
+            "type": "basic"
+        },
+        {
+            "description": "모든 키보드 - Hyper + J: IDE 프로그램(사용 중인 IDE 설정) 실행",
+            "from": {
+                "key_code": "j",
+                "modifiers": { "mandatory": ["left_command", "left_control", "left_option", "left_shift"] }
+            },
+            "to": [{ "shell_command": "open -a 'Cursor.app'" }],
+            "type": "basic"
+        },
+        {
+            "description": "모든 키보드 - Hyper + K: 터미널(사용 중인 앱 설정) 실행",
+            "from": {
+                "key_code": "k",
+                "modifiers": { "mandatory": ["left_command", "left_control", "left_option", "left_shift"] }
+            },
+            "to": [{ "shell_command": "open -a 'Tabby.app'" }],
+            "type": "basic"
+        },
+        {
+            "description": "모든 키보드 - Hyper + L: 웹 브라우저(주 사용 웹 브라우저 앱 설정) 실행",
+            "from": {
+                "key_code": "l",
+                "modifiers": { "mandatory": ["left_command", "left_control", "left_option", "left_shift"] }
+            },
+            "to": [{ "shell_command": "open -a 'Google Chrome.app'" }],
+            "type": "basic"
+        },
+        {
+            "description": "모든 키보드 - Hyper + U: Note app(사용중인 노트 앱 설정) 실행",
+            "from": {
+                "key_code": "u",
+                "modifiers": { "mandatory": ["left_command", "left_control", "left_option", "left_shift"] }
+            },
+            "to": [{ "shell_command": "open -a 'Obsidian.app'" }],
+            "type": "basic"
+        },
+        {
+            "description": "모든 키보드 - Hyper + I: 메신저 앱(사용중인 메신저 앱 설정) 실행",
+            "from": {
+                "key_code": "i",
+                "modifiers": { "mandatory": ["left_command", "left_control", "left_option", "left_shift"] }
+            },
+            "to": [{ "shell_command": "open -a 'Slack.app'" }],
+            "type": "basic"
+        }
+    ]
+}
