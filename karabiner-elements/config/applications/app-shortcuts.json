@@ -1,0 +1,20 @@
+{
+    "description": "애플리케이션 실행 단축키",
+    "manipulators": [
+        {
+            "description": "Hyper + F: 한영 전환",
+            "from": {
+                "key_code": "f",
+                "modifiers": { "mandatory": ["left_command", "left_control", "left_option", "left_shift"] }
+            },
+            "to": [
+                {
+                    "key_code": "9",
+                    "modifiers": ["left_command"]
+                }
+            ],
+            "type": "basic"
+        },
+        // ... 나머지 앱 단축키들 ...
+    ]
+}
