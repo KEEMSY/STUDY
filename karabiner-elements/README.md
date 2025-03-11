@@ -13,7 +13,9 @@ macOS용 Karabiner-Elements 키보드 커스터마이징 설정
 ### Hyper 키 단축키
 - Hyper + F: 한영 전환
 - Hyper + R: Spotlight 검색
-- Hyper + E: Homerow(키보드로 클릭하기)
+- Hyper + E: VIM 명령어(`:ls`)
+- Hyper + W: VIM 명령어(`ctrl + ww`)
+- Hyper + Q: Homerow(키보드로 클릭하기)
 - Hyper + J: Cursor(IDE)
 - Hyper + K: Tabby(Terminal)
 - Hyper + L: Chrome(Browser)
