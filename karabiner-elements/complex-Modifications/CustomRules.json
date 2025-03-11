@@ -133,15 +133,49 @@
             "type": "basic"
         },
         {
-            "description": "모든 키보드 - Hyper + E: Homerow(맥북 설정 값: cmd + space)",
+            "description": "모든 키보드 - Hyper + Q: Homerow(맥북 설정 값: cmd + space)",
             "from": {
-                "key_code": "e",
+                "key_code": "q",
                 "modifiers": { "mandatory": ["left_command", "left_control", "left_option", "left_shift"] }
             },
             "to": [
                 {
                     "key_code": "spacebar",
                     "modifiers": ["left_command"]
+                }
+            ],
+            "type": "basic"
+        },
+        {
+            "description": "모든 키보드 - Hyper + E: VSCode Vim :ls 명령어 입력",
+            "from": {
+                "key_code": "e",
+                "modifiers": { "mandatory": ["left_command", "left_control", "left_option", "left_shift"] }
+            },
+            "to": [
+                {
+                    "key_code": "semicolon",
+                    "modifiers": ["left_shift"]
+                },
+                { "key_code": "l" },
+                { "key_code": "s" }
+            ],
+            "type": "basic"
+        },
+        {
+            "description": "모든 키보드 - Hyper + W: Vim ctrl + ww (창 전환)",
+            "from": {
+                "key_code": "w",
+                "modifiers": { "mandatory": ["left_command", "left_control", "left_option", "left_shift"] }
+            },
+            "to": [
+                {
+                    "key_code": "w",
+                    "modifiers": ["left_control"]
+                },
+                {
+                    "key_code": "w",
+                    "modifiers": ["left_control"]
                 }
             ],
             "type": "basic"
