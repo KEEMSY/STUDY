@@ -14,6 +14,7 @@
 │       │   ├── CreationalPatterns
 │       │   └── StructuralPatterns
 │       └── SOLID
+│       └── CleanCode
 ├── Books
 │   ├── Clean-Architecture
 │   ├── Domain-Driven-Design-Distilled
