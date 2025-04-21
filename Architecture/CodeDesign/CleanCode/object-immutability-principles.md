@@ -38,3 +38,92 @@
 
 불변성은 단순한 기술적 제약이 아니라, **모델의 일관성과 현실 세계의 정확한 표현을 위한 중요한 설계 원칙**이다.  
 
+
+---
+---
+
+## 객체의 본질 변경을 막는다.
+
+객체를 생성한 후 객체의 본질 변경이 현실 세계에서 불가능하다면 필수 속성이 설정된 후에는 변경을 금지해야 한다. 이는 앞서 설명한 세 가지 규칙(완전한 객체 생성, 세터 제거, 게터 지양)을 통해 달성할 수 있다.
+
+- 불변 객체를 사용함으로써, 파급효과를 피하고 참조 투명성을 높일 수 있다.
+- 객체는 오직 우연적(incidental)인 방식으로만 변형되어야 하며, 본질적인 부분이 변형되어서는 안된다.
+
+### 불변 객체의 장점
+
+1. **스레드 안전성**: 동시성 환경에서 별도의 동기화 없이 안전하게 사용 가능
+2. **방어적 복사 불필요**: 객체가 변경되지 않으므로 복사본을 만들 필요가 없음
+3. **디버깅 용이성**: 객체 상태가 중간에 변경되지 않아 오류 추적이 용이함
+4. **시간적 결합 감소**: 객체 생성 시점과 사용 시점 사이의 의존성이 줄어듦
+
+> **객체의 본질**
+> 객체의 본질을 식별하는 것은 객체가 속한 도메인에 대한 깊은 이해가 필요하다. 만약 특정 동작을 제거해도 객체가 계속 동일한 역할을 수행한다면, 그 동작은 필수적이지 않다고 볼 수 있다.
+> 그리고 속성은 동작과 밀접하게 결합되어 있으므로 동일한 원칙이 적용되어야 한다.
+
+### 자바에서의 불변 객체 구현 예시
+
+```java
+// 불변 객체로 구현한 Money 클래스
+public final class Money {
+    private final BigDecimal amount;
+    private final Currency currency;
+
+    public Money(BigDecimal amount, Currency currency) {
+        if (amount == null) throw new IllegalArgumentException("금액은 null이 될 수 없습니다");
+        if (currency == null) throw new IllegalArgumentException("통화는 null이 될 수 없습니다");
+        
+        this.amount = amount;
+        this.currency = currency;
+    }
+
+    // 상태를 변경하는 대신 새 객체를 반환하는 연산
+    public Money add(Money other) {
+        if (!this.currency.equals(other.currency)) {
+            throw new IllegalArgumentException("다른 통화와 연산할 수 없습니다");
+        }
+        return new Money(this.amount.add(other.amount), this.currency);
+    }
+
+    public Money multiply(int multiplier) {
+        return new Money(this.amount.multiply(new BigDecimal(multiplier)), this.currency);
+    }
+
+    // 필요한 경우 제한적으로 값에 접근할 수 있는 메서드 제공
+    public boolean isGreaterThan(Money other) {
+        if (!this.currency.equals(other.currency)) {
+            throw new IllegalArgumentException("다른 통화와 비교할 수 없습니다");
+        }
+        return this.amount.compareTo(other.amount) > 0;
+    }
+
+    @Override
+    public String toString() {
+        return amount.toString() + " " + currency.getSymbol();
+    }
+
+    // equals와 hashCode는 반드시 구현
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Money money = (Money) o;
+        return amount.equals(money.amount) && currency.equals(money.currency);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(amount, currency);
+    }
+}
+```
+
+이 예시에서 `Money` 클래스는:
+
+1. `final` 클래스로 선언되어 확장을 방지
+2. 모든 필드가 `final`로 선언되어 변경 불가
+3. 상태를 변경하는 메서드는 원본 객체를 수정하지 않고 새 객체를 반환
+4. 생성자에서 유효성 검사를 통해 완전한 상태로 객체 생성
+5. 내부 상태를 직접 노출하는 게터 대신 의미 있는 행위 제공
+6. 동등성 비교를 위한 `equals`와 `hashCode` 구현
+
+불변 객체는 단순히 변경을 방지하는 것이 아니라, 도메인 모델의 무결성과 일관성을 보장하는 강력한 설계 원칙이다. 특히 값 객체(Value Object)와 같이 식별성보다 값의 의미가 중요한 경우, 불변성은 핵심 속성이 된다.
