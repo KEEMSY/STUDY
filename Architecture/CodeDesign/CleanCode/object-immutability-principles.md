@@ -127,3 +127,121 @@ public final class Money {
 6. 동등성 비교를 위한 `equals`와 `hashCode` 구현
 
 불변 객체는 단순히 변경을 방지하는 것이 아니라, 도메인 모델의 무결성과 일관성을 보장하는 강력한 설계 원칙이다. 특히 값 객체(Value Object)와 같이 식별성보다 값의 의미가 중요한 경우, 불변성은 핵심 속성이 된다.
+
+---
+---
+## 지연 로딩(지연초기화)을 사용하지 않는다.
+
+지연 초기화는 비용이 많이 드는 객체를 필요한 시점에만 생성하고, 그 전까지는 초기화를 지연시키는 방법이다. 이는 자원 사용을 최적화하고 성능을 개선하기 위해 사용되지만, 불변성 원칙에 위배되며 다양한 문제를 야기할 수 있다.
+
+### 지연 초기화의 문제점
+
+- **객체 생성 시 완전성 위배**: 불변 객체는 생성 시점에 완전한 상태여야 하지만, 지연 초기화는 이를 위반한다.
+- **동시성 문제**: 멀티스레드 환경에서 경쟁 상태(race condition)와 같은 문제가 발생할 수 있다.
+- **코드 복잡성 증가**: 동시성 문제를 해결하기 위한 락(lock)이나 동기화 코드가 필요해 복잡도가 증가한다.
+- **교착상태 위험**: 여러 객체가 상호 의존적으로 지연 초기화를 사용할 경우, 교착상태가 발생할 수 있다.
+
+### 안티 패턴 예시: 지연 초기화를 사용한 싱글턴
+
+```java
+// 문제가 있는 지연 초기화 싱글턴 패턴 구현
+public class ExpensiveResource {
+    private static ExpensiveResource instance;
+    
+    // 비용이 많이 드는 데이터
+    private final HeavyData heavyData;
+    
+    private ExpensiveResource() {
+        // 시간이 오래 걸리는 초기화 작업
+        heavyData = loadHeavyData();
+    }
+    
+    // 동기화되지 않은 지연 초기화 - 스레드 안전하지 않음
+    public static ExpensiveResource getInstance() {
+        if (instance == null) {  // 경쟁 상태 가능성 있음
+            instance = new ExpensiveResource();
+        }
+        return instance;
+    }
+    
+    private HeavyData loadHeavyData() {
+        // 비용이 많이 드는 로딩 작업 시뮬레이션
+        try {
+            Thread.sleep(2000);  // 2초 대기
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return new HeavyData();
+    }
+    
+    public void process() {
+        // heavyData를 사용한 처리
+    }
+    
+    private static class HeavyData {
+        // 많은 메모리를 사용하는 데이터 구조
+    }
+}
+```
+
+### 개선된 접근 방법: 불변성 유지하기
+
+```java
+// 불변성을 유지하는 즉시 초기화 방식
+public final class ExpensiveResource {
+    // 즉시 초기화 (Eager initialization)
+    private static final ExpensiveResource INSTANCE = new ExpensiveResource();
+    
+    private final HeavyData heavyData;
+    
+    private ExpensiveResource() {
+        heavyData = loadHeavyData();
+    }
+    
+    // 스레드 안전한 인스턴스 접근
+    public static ExpensiveResource getInstance() {
+        return INSTANCE;
+    }
+    
+    private HeavyData loadHeavyData() {
+        // 비용이 많이 드는 로딩 작업
+        return new HeavyData();
+    }
+    
+    // 메서드는 불변 상태를 유지
+    public Result process(Input input) {
+        // heavyData를 사용하여 input을 처리하고 새로운 Result 반환
+        return new Result(input, heavyData);
+    }
+    
+    private static class HeavyData {
+        // 불변 데이터 구조
+    }
+    
+    public static class Result {
+        private final Input input;
+        private final HeavyData data;
+        
+        public Result(Input input, HeavyData data) {
+            this.input = input;
+            this.data = data;
+        }
+        
+        // 결과에 대한 불변 접근 메서드들...
+    }
+    
+    public static class Input {
+        // 입력 데이터...
+    }
+}
+```
+
+### 대안적 해결책
+
+실제로 성능 문제가 있는 경우, 다음과 같은 대안을 고려해볼 수 있다:
+
+1. **프록시 패턴**: 실제 객체 대신 대리 객체를 통해 접근하되, 객체 자체는 완전히 초기화
+2. **팩토리 메서드**: 객체 생성을 팩토리에 위임하여 생성 시점을 제어하되, 생성된 객체는 불변으로 유지
+3. **의존성 주입**: 필요한 무거운 리소스를 외부에서 주입받아 객체 자체는 항상 완전한 상태 유지
+
+불변성을 유지하면서도 초기화 비용 문제를 해결하는 것이 중요하다. 섣부른 최적화보다는 설계의 일관성과 객체의 완전성을 우선시해야 한다.
