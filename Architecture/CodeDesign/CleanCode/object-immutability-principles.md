@@ -245,3 +245,73 @@ public final class ExpensiveResource {
 3. **의존성 주입**: 필요한 무거운 리소스를 외부에서 주입받아 객체 자체는 항상 완전한 상태 유지
 
 불변성을 유지하면서도 초기화 비용 문제를 해결하는 것이 중요하다. 섣부른 최적화보다는 설계의 일관성과 객체의 완전성을 우선시해야 한다.
+
+### ORM 프록시와 지연 로딩의 차이
+
+ORM(Object-Relational Mapping) 프레임워크에서 사용하는 프록시 기반 지연 로딩은 일반적인 객체 내부 지연 초기화와는 다른 접근 방식을 취한다.
+
+#### 객체 내부 지연 초기화 vs ORM 프록시
+
+| 객체 내부 지연 초기화 | ORM 프록시 기반 지연 로딩 |
+|-------------------|------------------------|
+| 객체가 자신의 상태를 스스로 늦게 초기화 | 프록시 객체가 실제 객체를 대신하여 로딩 담당 |
+| 객체가 불완전한 상태로 존재할 수 있음 | 실제 객체는 항상 완전한 상태로 생성됨 |
+| 객체 내부에 로딩 로직이 포함됨 | 로딩 로직이 프레임워크에 위임됨 |
+| 책임이 혼재됨 | 관심사 분리가 잘 이루어짐 |
+
+#### 객체 내부 지연 초기화 (안티 패턴)
+
+```java
+public class User {
+    private List<Order> orders; // 초기에는 null
+    
+    public List<Order> getOrders() {
+        if (orders == null) { // 지연 초기화
+            orders = loadOrdersFromDatabase(); // 객체가 직접 DB 접근
+        }
+        return orders;
+    }
+    
+    private List<Order> loadOrdersFromDatabase() {
+        // 데이터베이스에서 주문 정보 로딩
+        return new ArrayList<>();
+    }
+}
+```
+
+#### ORM 프록시 기반 지연 로딩 (대안적 접근)
+
+```java
+@Entity
+public class User {
+    @Id
+    private Long id;
+    
+    private String name;
+    
+    @OneToMany(fetch = FetchType.LAZY) // 프록시 기반 지연 로딩
+    private List<Order> orders; // 프록시 컬렉션으로 초기화됨
+    
+    // 단순히 프록시 객체 반환, 로딩 로직 포함하지 않음
+    public List<Order> getOrders() {
+        return orders;
+    }
+}
+```
+
+ORM 프록시 방식은 다음과 같은 장점을 제공한다:
+
+1. **책임 분리**: 객체는 비즈니스 로직에만 집중하고, 데이터 로딩은 프레임워크가 담당
+2. **투명한 접근**: 클라이언트 코드는 실제 객체와 프록시를 구분하지 않고 동일하게 사용
+3. **일관된 객체 상태**: 실제 엔티티 객체는 항상 일관된 상태를 유지
+
+그러나 ORM 프록시 사용 시에도 주의해야 할 점이 있다:
+
+- LazyInitializationException과 같은 예외 상황 처리
+- N+1 쿼리 문제 발생 가능성
+- 영속성 컨텍스트 생명주기 관리의 복잡성
+
+결론적으로, 본 문서에서 경계하는 지연 초기화는 주로 객체 자신이 내부 상태를 직접 지연 초기화하는 패턴을 말한다. ORM의 프록시 기반 접근은 책임 분리와 관심사 분리를 통해 객체 불변성 원칙을 더 잘 지키면서도 성능상의 이점을 취할 수 있는 대안적 접근법이다.
+
+---
+---
