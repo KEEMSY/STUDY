@@ -101,3 +101,129 @@ public class User {
 
 - 빈 생성자 사용을 지양하고, 객체의 본질을 정의하는 모든 필수 속성은 생성자에서 반드시 초기화해야 한다.
 - 이는 객체의 일관성, 안정성, 유지보수성을 크게 높여준다.
+
+---
+---
+
+## 게터(Getter)를 제거한다.
+
+get 접두사를 사용하는 접근자 메서드는 정보 은닉과 캡슐화 원칙을 위배하게 된다. 이는 객체의 내부 구현을 외부에 노출시켜 유연한 설계를 방해한다.
+
+### 게터 사용의 문제점
+
+1. **캡슐화 위반**
+   - 객체의 내부 상태를 직접 노출
+   - 구현 세부사항이 외부로 유출
+   - 객체의 자율성 저하
+
+2. **결합도 증가**
+   - 객체 간 강한 결합 발생
+   - 변경의 어려움
+   - 유지보수성 저하
+
+3. **책임의 분산**
+   - 객체가 자신의 상태를 책임지지 못함
+   - 비즈니스 로직이 객체 외부로 유출
+   - 응집도 저하
+
+### 코드 예시
+
+#### 나쁜 예: 게터 사용
+
+```java
+class Order {
+    private List<OrderItem> items;
+    private BigDecimal totalAmount;
+
+    // 게터를 통해 내부 상태 노출
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+}
+
+// 클라이언트 코드
+class OrderProcessor {
+    public void process(Order order) {
+        // 객체 외부에서 상태를 직접 조작
+        List<OrderItem> items = order.getItems();
+        BigDecimal total = order.getTotalAmount();
+        
+        // 비즈니스 로직이 객체 외부에 존재
+        if (total.compareTo(new BigDecimal("10000")) > 0) {
+            applyDiscount(items);
+        }
+    }
+}
+```
+
+#### 좋은 예: 행위 중심 설계
+
+```java
+class Order {
+    private List<OrderItem> items;
+    private BigDecimal totalAmount;
+
+    // 객체가 자신의 상태를 책임지는 행위 제공
+    public void applyDiscountIfEligible() {
+        if (isEligibleForDiscount()) {
+            applyDiscount();
+        }
+    }
+
+    private boolean isEligibleForDiscount() {
+        return totalAmount.compareTo(new BigDecimal("10000")) > 0;
+    }
+
+    private void applyDiscount() {
+        items.forEach(OrderItem::applyDiscount);
+        recalculateTotalAmount();
+    }
+
+    // 필요한 경우 상태 확인을 위한 서술적 메서드 제공
+    public boolean hasItems() {
+        return !items.isEmpty();
+    }
+
+    public boolean exceedsAmount(BigDecimal threshold) {
+        return totalAmount.compareTo(threshold) > 0;
+    }
+}
+
+// 클라이언트 코드
+class OrderProcessor {
+    public void process(Order order) {
+        // 객체에 행위를 요청
+        order.applyDiscountIfEligible();
+    }
+}
+```
+
+### 개선 방안
+
+1. **Tell, Don't Ask 원칙 적용**
+   - 객체의 상태를 묻지 말고, 행위를 요청하라
+   - 객체가 자신의 상태를 스스로 관리하도록 함
+
+2. **행위 중심 인터페이스**
+   - 상태 접근자 대신 의미 있는 행위 제공
+   - 비즈니스 로직을 객체 내부로 이동
+
+3. **의도를 드러내는 메서드**
+   - 단순한 상태 접근이 아닌 의도가 드러나는 메서드 이름 사용
+   - 도메인 용어를 활용한 메서드 명명
+
+4. **불변성 활용**
+   - 가능한 한 객체를 불변으로 설계
+   - 상태 변경이 필요한 경우 새로운 객체 반환
+
+### 결론
+
+게터를 제거하고 객체가 자신의 상태를 스스로 관리하도록 설계하면 다음과 같은 장점을 얻을 수 있다.
+- 캡슐화가 향상됨
+- 객체의 자율성이 증가
+- 코드의 유지보수성이 개선됨
+- 도메인 모델이 더 풍부해짐
