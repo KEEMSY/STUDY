@@ -227,3 +227,128 @@ class OrderProcessor {
 - 객체의 자율성이 증가
 - 코드의 유지보수성이 개선됨
 - 도메인 모델이 더 풍부해짐
+
+---
+---
+
+## 세터(Setter)를 제거한다.
+
+세터 메서드는 객체의 캡슐화를 깨고 불변성을 해치는 주요 원인이 된다. 객체의 상태 변경은 의미 있는 행위를 통해 이루어져야 한다.
+
+### 세터 사용의 문제점
+
+1. **캡슐화 위반**
+   - 객체의 내부 상태를 직접 변경 가능
+   - 객체의 일관성과 유효성 보장이 어려움
+   - 객체가 불완전한 상태가 될 위험
+
+2. **불변성 훼손**
+   - 객체의 핵심 속성이 언제든 변경될 수 있음
+   - 객체의 신뢰성과 예측 가능성 저하
+   - 동시성 문제 발생 가능
+
+### 코드 예시
+
+#### 나쁜 예: 세터 사용
+
+```java
+class User {
+    private String name;
+    private String email;
+    private Address address;
+
+    // 세터를 통한 직접적인 상태 변경
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+}
+
+// 클라이언트 코드
+User user = new User();
+user.setName("John");  // 객체가 불완전한 상태로 존재 가능
+user.setEmail("invalid");  // 유효성 검사 누락
+```
+
+#### 좋은 예: 의미 있는 행위 제공
+
+```java
+class User {
+    private final String name;
+    private final String email;
+    private Address address;
+
+    public User(String name, String email) {
+        validateName(name);
+        validateEmail(email);
+        this.name = name;
+        this.email = email;
+    }
+
+    // 의미 있는 행위를 통한 상태 변경
+    public User withUpdatedEmail(String newEmail) {
+        validateEmail(newEmail);
+        return new User(this.name, newEmail);
+    }
+
+    public void moveToAddress(Address newAddress) {
+        if (newAddress == null) {
+            throw new IllegalArgumentException("주소는 null일 수 없습니다.");
+        }
+        this.address = newAddress;
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("이름은 필수입니다.");
+        }
+    }
+
+    private void validateEmail(String email) {
+        if (!isValidEmail(email)) {
+            throw new IllegalArgumentException("유효하지 않은 이메일입니다.");
+        }
+    }
+}
+
+// 클라이언트 코드
+User user = new User("John", "john@example.com");  // 항상 완전한 상태
+User updatedUser = user.withUpdatedEmail("new@example.com");  // 불변성 유지
+user.moveToAddress(new Address("Seoul"));  // 의미 있는 행위
+```
+
+### 개선 방안
+
+1. **생성 시점에 필수 값 설정**
+   - 생성자를 통해 필수 속성 초기화
+   - 유효성 검사를 생성 시점에 수행
+
+2. **불변 객체 활용**
+   - 상태 변경이 필요한 경우 새로운 객체 반환
+   - 변경이 필요한 경우 명확한 의도를 가진 메서드 제공
+
+3. **의미 있는 행위 정의**
+   - 세터 대신 도메인 의미를 가진 메서드 사용
+   - 상태 변경의 의도와 제약사항을 메서드에 표현
+
+4. **유효성 검사 보장**
+   - 모든 상태 변경 시 유효성 검사 수행
+   - 객체의 일관성 유지
+
+### 결론
+
+세터를 제거하고 의미 있는 행위를 통해 상태를 변경하면:
+- 객체의 일관성과 유효성이 보장됨
+- 코드의 의도가 명확해짐
+- 버그 발생 가능성이 줄어듦
+- 유지보수가 용이해짐
+
+---
+---
